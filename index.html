@@ -3,211 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brewing Tools</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-
+    <title>Brewing Tools by Hiban</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #f4f1ea; font-family: -apple-system, sans-serif; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { background-color: #ffffff; padding: 24px; border-radius: 24px; box-shadow: 0 10px 30px rgba(74, 55, 40, 0.06); width: 100%; max-width: 450px; }
-        .app-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; text-align: center; margin-bottom: 22px; font-size: 24px; }
-        .section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; margin: 0; font-size: 16px; }
-        
-        /* Layout Input Parameter */
-        .row { display: flex; gap: 12px; margin-bottom: 12px; width: 100%; }
-        .input-group { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .input-group label { font-size: 12px; font-weight: 600; color: #7c6350; margin-bottom: 6px; }
-        .input-group input, .input-group select { padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; font-size: 14px; outline: none; background-color: #faf9f6; color: #4a3728; }
-        .input-group input[readonly] { background-color: #f0ede6; color: #7c6350; }
-        
-        .pouring-header { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 12px; }
-        .btn-add { background-color: #d4a373; color: white; border: none; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        /* --- GAYA CUSTOME BAR COFFEE THEME --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FAF6F0;
+            color: #3E2723;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
 
-        /* Header Label untuk Waktu dan Gram */
-        .pouring-labels { display: flex; gap: 8px; padding: 0 8px; margin-bottom: 6px; }
-        .label-col-badge { width: 80px; } /* Menyelaraskan dengan lebar badge "Bloom" / "Pour" */
-        .label-col-input { flex: 1; font-size: 11px; font-weight: 700; color: #7c6350; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
-        .label-col-btn { width: 32px; } /* Menyelaraskan dengan tombol hapus (X) */
+        .main-container {
+            width: 100%;
+            max-width: 480px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-        /* Baris Interval */
-        .pouring-row { display: flex; align-items: center; gap: 8px; background-color: #faf9f6; border: 1.5px solid #e6dfd5; padding: 8px; border-radius: 12px; margin-bottom: 8px; }
-        .status-badge { font-size: 11px; font-weight: bold; width: 80px; color: #4a3728; background-color: #eaddca; padding: 8px 5px; border-radius: 8px; text-align: center; }
-        .pouring-row input { flex: 1; min-width: 0; padding: 8px; border: 1.5px solid #e6dfd5; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600; color: #4a3728; }
-        .pouring-row input:focus { border-color: #d4a373; outline: none; }
-        .btn-delete { background-color: #e63946; color: white; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: #4E342E;
+        }
 
-        /* Timer Box */
-        .timer-box { background-color: #4a3728; color: white; padding: 28px 20px; border-radius: 20px; text-align: center; margin-top: 24px; margin-bottom: 24px; }
-        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 52px; font-weight: 700; }
-        .status-display { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; color: #d4a373; margin-bottom: 12px; text-transform: uppercase; }
-        .target-display { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-        .next-pour-display { font-size: 13px; color: #ffb703; font-weight: 600; margin-bottom: 24px; }
-        .timer-controls { display: flex; gap: 12px; justify-content: center; }
-        .btn-control { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; max-width: 130px; }
-        .btn-start { background-color: #2a9d8f; color: white; }
-        .btn-reset { background-color: #e63946; color: white; }
+        /* Form Input Baris Atas */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-        /* Taste Notes & Input */
-        .taste-notes-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .taste-row { display: flex; align-items: center; gap: 10px; }
-        .taste-label { font-size: 13px; font-weight: 600; color: #7c6350; width: 85px; }
-        .taste-input { flex: 1; padding: 10px; border: 1.5px solid #e6dfd5; border-radius: 10px; font-size: 13px; background-color: #faf9f6; color: #4a3728; font-style: normal; outline: none; }
-        .taste-input:focus { border-color: #d4a373; }
-        .notes-area { width: 100%; height: 95px; padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; background-color: #faf9f6; font-size: 13.5px; margin-top: 12px; color: #4a3728; font-style: normal; outline: none; line-height: 1.4; }
-        .notes-area:focus { border-color: #d4a373; }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-        /* Kustomisasi Placeholder Miring (Italic) */
-        .taste-input::placeholder, .notes-area::placeholder {
-            font-style: italic;
-            color: #a89f91;
-            opacity: 0.8;
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #6D4C41;
+        }
+
+        .input-group input, .input-group select {
+            padding: 10px;
+            border: 1px solid #E0D4C3;
+            border-radius: 8px;
+            background-color: #FDFBF7;
+            font-size: 15px;
+            color: #3E2723;
+            outline: none;
+        }
+
+        /* Area Interval Pouring */
+        .section-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .btn-add {
+            background-color: #D7CCC8;
+            color: #4E342E;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .pouring-table-header {
+            display: grid;
+            grid-template-columns: 2.5fr 2fr 2fr 1fr;
+            gap: 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #8D6E63;
+            margin-bottom: 6px;
+        }
+
+        .pouring-row {
+            display: grid;
+            grid-template-columns: 2.5fr 2fr 2fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .status-badge {
+            background-color: #F5EBE6;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #5D4037;
+        }
+
+        .pouring-row input {
+            padding: 10px;
+            border: 1px solid #E0D4C3;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background-color: #EF5350;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Display Timer Besar */
+        .timer-display-box {
+            background-color: #4E342E;
+            color: #FFFFFF;
+            border-radius: 14px;
+            padding: 25px 15px;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .timer-numbers {
+            font-size: 64px;
+            font-weight: bold;
+            font-family: monospace;
+            line-height: 1;
+            letter-spacing: 2px;
+        }
+
+        .timer-status {
+            font-size: 16px;
+            font-weight: bold;
+            color: #D7CCC8;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .timer-info {
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        .timer-next-step {
+            font-size: 13px;
+            color: #FFCC80;
+            margin-top: 4px;
+        }
+
+        .timer-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-timer {
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
+        .btn-start { background-color: #26A69A; color: white; }
+        .btn-reset { background-color: #EC407A; color: white; }
+
+        /* Taste Notes Section */
+        .taste-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .taste-row {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .taste-row label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5D4037;
+        }
+
+        .taste-row input {
+            padding: 10px;
+            border: 1px solid #E0D4C3;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .notes-area {
+            width: 100%;
+            height: 90px;
+            padding: 12px;
+            border: 1px solid #E0D4C3;
+            border-radius: 8px;
+            background-color: #FAFAFA;
+            font-size: 14px;
+            color: #424242;
+            box-sizing: border-box;
+            resize: none;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        /* --- PERBAIKAN STRUKTUR CSS TOMBOL SIMPAN --- */
+        .submit-container {
+            width: 100%;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            clear: both; /* Memotong bug floating */
+            position: relative; /* Menghilangkan efek absolute bawaan browser */
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: #8B5A2B; /* Warna Cokelat Kopi Solid */
+            color: white;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.2s ease;
+        }
+
+        .btn-submit:active {
+            background-color: #6F421B; /* Respon visual pas diklik di HP */
+        }
+
+        .status-msg {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="app-title">BREWING TIMER TOOLS</div>
-    <div class="row"><div class="input-group"><label>Kopi (g)</label><input type="number" id="kopi" value="15" oninput="hitungTotalAir()"></div><div class="input-group"><label>Ratio (1:x)</label><input type="number" id="ratio" value="15" oninput="hitungTotalAir()"></div></div>
-    <div class="row"><div class="input-group"><label>Total Air (g)</label><input type="number" id="totalAir" value="225" readonly></div><div class="input-group"><label>Suhu (°C)</label><input type="number" id="suhu" value="92"></div></div>
-    <div class="row"><div class="input-group"><label>Grind</label><select id="grindSize"><option>Medium</option><option>Fine</option><option>Medium-Fine</option><option>Medium-Coarse</option><option>Coarse</option></select></div><div class="input-group"><label>Roast</label><select id="roastBeans"><option>Medium</option><option>Light</option><option>Medium-Light</option><option>Medium-Dark</option><option>Dark</option></select></div></div>
+<div class="main-container">
+    <h1>BREWING TIMER TOOLS</h1>
 
-    <!-- Header Interval Seduh -->
-    <div class="pouring-header"><div class="section-title">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
-    
-    <!-- Penunjuk Label Kolom Atas -->
-    <div class="pouring-labels">
-        <span class="label-col-badge"></span>
-        <span class="label-col-input">Air (g)</span>
-        <span class="label-col-input">Waktu (s)</span>
-        <span class="label-col-btn"></span>
-    </div>
-
-    <div id="pouringContainer">
-        <div class="pouring-row"><span class="status-badge" data-type="Bloom">Bloom</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="45"><button class="btn-delete" onclick="hapusBaris(this)">✕</button></div>
-        <div class="pouring-row"><span class="status-badge" data-type="Pour 2">Pour 2</span><input type="number" class="water-input" value="100"><input type="number" class="time-input" value="45"><button class="btn-delete" onclick="hapusBaris(this)">✕</button></div>
-    </div>
-
-    <!-- Timer Control Box -->
-    <div class="timer-box">
-        <div class="timer-display" id="timerDisplay">00:00</div>
-        <div class="status-display" id="statusDisplay">READY</div>
-        <div class="target-display" id="targetDisplay">Target Air: 0g</div>
-        <div class="next-pour-display" id="nextPourDisplay">Pouring selanjutnya: --</div>
-        <div class="timer-controls"><button class="btn-control btn-start" id="btnStart" onclick="toggleTimer()">START</button><button class="btn-control btn-reset" onclick="resetTimer()">RESET</button></div>
-    </div>
-
-    <!-- Taste Notes Terstruktur dengan Placeholder Miring -->
-    <div class="section-title">Taste Notes</div>
-    <div class="taste-notes-container">
-        <div class="taste-row">
-            <span class="taste-label">Flavor</span>
-            <input type="text" class="taste-input" id="flavor" placeholder="Fruity red berry dan fruit jam">
+    <!-- Parameter Seduh -->
+    <div class="form-grid">
+        <div class="input-group">
+            <label for="kopi">Kopi (g)</label>
+            <input type="number" id="kopi" value="15" oninput="hitungTotalAir()">
         </div>
-        <div class="taste-row">
-            <span class="taste-label">Acidity</span>
-            <input type="text" class="taste-input" id="acidity" placeholder="Juicy seperti apel merah">
+        <div class="input-group">
+            <label for="ratio">Ratio (1:x)</label>
+            <input type="number" id="ratio" value="15" oninput="hitungTotalAir()">
         </div>
-        <div class="taste-row">
-            <span class="taste-label">Sweetness</span>
-            <input type="text" class="taste-input" id="sweetness" placeholder="Tinggi menyerupai gula aren">
+        <div class="input-group">
+            <label for="totalAir">Total Air (g)</label>
+            <input type="number" id="totalAir" value="225" readonly style="background-color:#EEEEEE;">
         </div>
-        <div class="taste-row">
-            <span class="taste-label">Body</span>
-            <input type="text" class="taste-input" id="body" placeholder="Medium round">
+        <div class="input-group">
+            <label for="suhu">Suhu (°C)</label>
+            <input type="number" id="suhu" value="92">
         </div>
-        <div class="taste-row">
-            <span class="taste-label">Aftertaste</span>
-            <input type="text" class="taste-input" id="aftertaste" placeholder="Fruity panjang">
+        <div class="input-group">
+            <label for="grindSize">Grind</label>
+            <select id="grindSize">
+                <option value="Fine">Fine</option>
+                <option value="Medium-Fine">Medium-Fine</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Coarse">Coarse</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="roastBeans">Roast</label>
+            <select id="roastBeans">
+                <option value="Light">Light</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Dark">Dark</option>
+            </select>
         </div>
     </div>
-    
-    <!-- Kesimpulan dengan Placeholder Gabungan Terstruktur -->
-    <textarea class="notes-area" id="tasteSummary" placeholder="Fruity red berry dan fruit jam. Sweetness tinggi menyerupai gula aren, acidity juicy seperti apel merah, body medium round, dengan aftertaste fruity panjang."></textarea>
-</div>
 
-    <!-- Pastikan blok kode ini ada di bawah textarea dan di atas <script> -->
+    <!-- Kontrol Interval Pouring -->
+    <div class="section-title-row">
+        <h2 class="section-title">Interval Pouring</h2>
+        <button class="btn-add" onclick="tambahBarisPouring()">+ Tambah</button>
+    </div>
+
+    <div class="pouring-table-header">
+        <div>TAHAPAN</div>
+        <div>AIR (G)</div>
+        <div>WAKTU (S)</div>
+        <div></div>
+    </div>
+
+    <div id="containerPouring">
+        <!-- Baris Awal Default -->
+        <div class="pouring-row">
+            <div class="status-badge">Bloom</div>
+            <input type="number" class="pour-air" value="50">
+            <input type="number" class="pour-waktu" value="45">
+            <button class="btn-delete" onclick="hapusBarisPouring(this)">×</button>
+        </div>
+        <div class="pouring-row">
+            <div class="status-badge">Pour 2</div>
+            <input type="number" class="pour-air" value="100">
+            <input type="number" class="pour-waktu" value="45">
+            <button class="btn-delete" onclick="hapusBarisPouring(this)">×</button>
+        </div>
+    </div>
+
+    <!-- Kotak Timer Mekanik -->
+    <div class="timer-display-box">
+        <div class="timer-numbers" id="timerDisplay">00:00</div>
+        <div class="timer-status" id="timerStatus">READY</div>
+        <div class="timer-info">Target Air: <span id="targetAirDisplay">0g</span></div>
+        <div class="timer-next-step" id="nextStepDisplay">Pouring selanjutnya: --</div>
+        
+        <div class="timer-controls">
+            <button class="btn-timer btn-start" id="btnStart" onclick="toggleTimer()">START</button>
+            <button class="btn-timer btn-reset" onclick="resetTimer()">RESET</button>
+        </div>
+    </div>
+
+    <!-- Komponen Catatan Rasa -->
+    <h2 class="taste-title">Taste Notes</h2>
+    <div class="taste-row">
+        <label for="flavor">Flavor</label>
+        <input type="text" id="flavor" placeholder="Fruity red berry dan fruit jam">
+    </div>
+    <div class="taste-row">
+        <label for="acidity">Acidity</label>
+        <input type="text" id="acidity" placeholder="Juicy seperti apel merah">
+    </div>
+    <div class="taste-row">
+        <label for="sweetness">Sweetness</label>
+        <input type="text" id="sweetness" placeholder="Tinggi menyerupai gula aren">
+    </div>
+    <div class="taste-row">
+        <label for="body">Body</label>
+        <input type="text" id="body" placeholder="Medium round">
+    </div>
+    <div class="taste-row">
+        <label for="aftertaste">Aftertaste</label>
+        <input type="text" id="aftertaste" placeholder="Fruity panjang">
+    </div>
+
+    <!-- Kesimpulan Gabungan -->
+    <textarea class="notes-area" id="tasteSummary" placeholder="Kesimpulan rasa seduhan Anda akan digabungkan di sini secara otomatis..." readonly></textarea>
+
+    <!-- KONTROL UTAMA TOMBOL SIMPAN (Sudah Diperbaiki Posisinya ke Bawah) -->
     <div class="submit-container">
-        <button class="btn-submit" id="btnSubmit" onclick="kirimDataKeSheets()">💾 SAVE HISTORY</button>
+        <button class="btn-submit" id="btnSubmit" onclick="kirimDataKeSheets()">💾 SIMPAN HISTORY</button>
         <div class="status-msg" id="statusMsg"></div>
     </div>
-    
-<script>
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXwH9qiEbayI47M9MT7ibdfzypDCGqGKomUBnPPNESPF31evl7MSL3Y7dG_j2bDers/exec";
-    let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
 
-    function hitungTotalAir() { const k = parseFloat(document.getElementById('kopi').value)||0; const r = parseFloat(document.getElementById('ratio').value)||0; document.getElementById('totalAir').value = k*r; }
-    
+</div>
+
+<script>
+    // --- AKORDEON GOOGLE APP SCRIPT URL (PASTIKAN BERAKHIRAN /exec) ---
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXwH9qiEbayI47M9MT7ibdfzypDCGqGKomUBnPPNESPF31evl7MSL3Y7dG_j2bDers/exec";
+
+    let timerInterval = null;
+    let totalDetikBerjalan = 0;
+    let isRunning = false;
+    let daftarLangkah = [];
+    let indeksLangkahSekarang = 0;
+    let akumulasiAirSaatIni = 0;
+
+    // Hitung Otomatis Air Dasbor Atas
+    function hitungTotalAir() {
+        const k = parseFloat(document.getElementById('kopi').value) || 0;
+        const r = parseFloat(document.getElementById('ratio').value) || 0;
+        document.getElementById('totalAir').value = k * r;
+    }
+
+    // Penambahan Baris Dinamis & Penamaan Ulang
+    function tambahBarisPouring() {
+        const container = document.getElementById('containerPouring');
+        const barisBaru = document.createElement('div');
+        barisBaru.className = 'pouring-row';
+        barisBaru.innerHTML = `
+            <div class="status-badge">Pour</div>
+            <input type="number" class="pour-air" value="50">
+            <input type="number" class="pour-waktu" value="30">
+            <button class="btn-delete" onclick="hapusBarisPouring(this)">×</button>
+        `;
+        container.appendChild(barisBaru);
+        urutkanUlangMekanikBaris();
+    }
+
+    function hapusBarisPouring(btn) {
+        btn.parentElement.remove();
+        urutkanUlangMekanikBaris();
+    }
+
     function urutkanUlangMekanikBaris() {
         const rows = document.querySelectorAll('.pouring-row');
         rows.forEach((row, index) => {
             const badge = row.querySelector('.status-badge');
-            if (index === 0) { badge.innerText = 'Bloom'; badge.setAttribute('data-type', 'Bloom'); }
-            else { badge.innerText = `Pour ${index + 1}`; badge.setAttribute('data-type', `Pour ${index + 1}`); }
+            if (index === 0) {
+                badge.innerText = 'Bloom';
+            } else {
+                badge.innerText = 'Pour ' + (index + 1);
+            }
         });
     }
 
-    function tambahBaris() {
-        if (isRunning) return;
-        const container = document.getElementById('pouringContainer');
-        if (container.children.length >= 10) return;
-        const newRow = document.createElement('div');
-        newRow.className = 'pouring-row';
-        newRow.innerHTML = `<span class="status-badge" data-type="Pour">Pour</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="30"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
-        container.appendChild(newRow);
-        urutkanUlangMekanikBaris();
-    }
-
-    function hapusBaris(btn) { if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } }
-
-    function susunRencanaSeduh() {
-        daftarLangkah = []; airKumulatif = 0;
-        document.querySelectorAll('.pouring-row').forEach((row, idx) => {
-            const air = parseFloat(row.querySelector('.water-input').value)||0;
-            const durasi = parseInt(row.querySelector('.time-input').value)||0;
-            airKumulatif += air;
-            daftarLangkah.push({ tipe: row.querySelector('.status-badge').innerText, durasi, targetAir: airKumulatif });
+    // --- LOGIKA UTAMA TIMER KASUYA / POURING ---
+    function siapkanRencanaSeduh() {
+        daftarLangkah = [];
+        const rows = document.querySelectorAll('.pouring-row');
+        rows.forEach(row => {
+            daftarLangkah.push({
+                nama: row.querySelector('.status-badge').innerText,
+                air: parseFloat(row.querySelector('.pour-air').value) || 0,
+                durasi: parseInt(row.querySelector('.pour-waktu').value) || 0
+            });
         });
     }
 
     function toggleTimer() {
         if (!isRunning) {
-            if (totalDetikBerjalan === 0) { susunRencanaSeduh(); if(daftarLangkah.length===0) return; }
-            isRunning = true; document.getElementById('btnStart').innerText = 'PAUSE'; document.getElementById('btnStart').style.backgroundColor = '#f4a261';
-            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=true);
-            timerInterval = setInterval(jalankanTimer, 1000);
+            if (totalDetikBerjalan === 0) {
+                siapkanRencanaSeduh();
+                if (daftarLangkah.length === 0) return alert("Tambahkan minimal 1 langkah pouring!");
+                indeksLangkahSekarang = 0;
+                akumulasiAirSaatIni = daftarLangkah[0].air;
+                perbaruiTampilanMekanik();
+            }
+            isRunning = true;
+            document.getElementById('btnStart').innerText = 'PAUSE';
+            document.getElementById('btnStart').style.backgroundColor = '#FFA726';
+            document.getElementById('timerStatus').innerText = 'BREWING...';
+            
+            timerInterval = setInterval(() => {
+                totalDetikBerjalan++;
+                perbaruiTampilanMekanik();
+                cekTransisiTahapan();
+            }, 1000);
         } else {
-            isRunning = false; document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
             clearInterval(timerInterval);
+            isRunning = false;
+            document.getElementById('btnStart').innerText = 'START';
+            document.getElementById('btnStart').style.backgroundColor = '#26A69A';
+            document.getElementById('timerStatus').innerText = 'PAUSED';
         }
     }
 
-    function jalankanTimer() {
-        if (indeksLangkahSekarang >= daftarLangkah.length) {
-            clearInterval(timerInterval); isRunning = false;
-            document.getElementById('statusDisplay').innerText = 'SELESAI';
-            document.getElementById('btnStart').innerText = 'START';
-            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
-            return;
+    function cekTransisiTahapan() {
+        let batasWaktu = 0;
+        for (let i = 0; i <= indeksLangkahSekarang; i++) {
+            batasWaktu += daftarLangkah[i].durasi;
         }
-        totalDetikBerjalan++; detikDiLangkahSekarang++;
-        const langkah = daftarLangkah[indeksLangkahSekarang];
-        if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; }
-        
-        document.getElementById('timerDisplay').innerText = `${Math.floor(totalDetikBerjalan/60).toString().padStart(2,'0')}:${(totalDetikBerjalan%60).toString().padStart(2,'0')}`;
-        document.getElementById('statusDisplay').innerText = langkah.tipe;
-        document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
-        document.getElementById('nextPourDisplay').innerText = (indeksLangkahSekarang+1 < daftarLangkah.length) ? `Next: ${daftarLangkah[indeksLangkahSekarang+1].tipe}` : "Selesai";
+
+        if (totalDetikBerjalan >= batasWaktu) {
+            if (indeksLangkahSekarang < daftarLangkah.length - 1) {
+                indeksLangkahSekarang++;
+                akumulasiAirSaatIni += daftarLangkah[indeksLangkahSekarang].air;
+            } else {
+                // Selesai Seduh
+                clearInterval(timerInterval);
+                isRunning = false;
+                document.getElementById('btnStart').innerText = 'START';
+                document.getElementById('btnStart').style.backgroundColor = '#26A69A';
+                document.getElementById('timerStatus').innerText = 'FINISHED';
+                document.getElementById('nextStepDisplay').innerText = "Seduhan Selesai! Nikmati Kopi Anda.";
+                buatKesimpulanOtomatis();
+            }
+        }
+    }
+
+    function perbaruiTampilanMekanik() {
+        let m = Math.floor(totalDetikBerjalan / 60).toString().padStart(2, '0');
+        let s = (totalDetikBerjalan % 60).toString().padStart(2, '0');
+        document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+        document.getElementById('targetAirDisplay').innerText = akumulasiAirSaatIni + "g";
+
+        if (indeksLangkahSekarang < daftarLangkah.length - 1) {
+            let next = daftarLangkah[indeksLangkahSekarang + 1];
+            document.getElementById('nextStepDisplay').innerText = `Selanjutnya: ${next.nama} (+${next.air}g)`;
+        } else if (document.getElementById('timerStatus').innerText === 'BREWING...') {
+            document.getElementById('nextStepDisplay').innerText = "Menunggu tetesan terakhir...";
+        }
     }
 
     function resetTimer() {
-        clearInterval(timerInterval); isRunning = false; totalDetikBerjalan = 0; indeksLangkahSekarang = 0; detikDiLangkahSekarang = 0;
-        document.getElementById('timerDisplay').innerText = '00:00'; document.getElementById('statusDisplay').innerText = 'READY';
-        document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
+        clearInterval(timerInterval);
+        isRunning = false;
+        totalDetikBerjalan = 0;
+        indeksLangkahSekarang = 0;
+        akumulasiAirSaatIni = 0;
+        document.getElementById('timerDisplay').innerText = '00:00';
+        document.getElementById('timerStatus').innerText = 'READY';
+        document.getElementById('targetAirDisplay').innerText = '0g';
+        document.getElementById('nextStepDisplay').innerText = 'Pouring selanjutnya: --';
         document.getElementById('btnStart').innerText = 'START';
+        document.getElementById('btnStart').style.backgroundColor = '#26A69A';
     }
-</script>
-</body>
-</html>
+
+    // Penggabungan Teks Rasa Otomatis
+    function buatKesimpulanOtomatis() {
+        const flv = document.getElementById('flavor').value || "-";
+        const acd = document.getElementById('acidity').value || "-";
+        const swt = document.getElementById('sweetness').value || "-";
+        const bdy = document.getElementById('body').value || "-";
+        const aft = document.getElementById('aftertaste').value || "-";
+
+        const gabungan = `Flavor ${flv}. Sweetness ${swt}, acidity ${acd}, body ${bdy}, dengan aftertaste ${aft}.`;
+        document.getElementById('tasteSummary').value = gabungan;
+    }
+
+    // --- PROSES KIRIM DATA KE GOOGLE SHEETS ---
+    function kirimDataKeSheets() {
+        buatKesimpulanOtomatis(); // Pastikan data rasa terbaru dirangkum terlebih dahulu
+
+        const msgDiv = document.getElementById('statusMsg');
+        const btn = document.getElementById('btnSubmit');
+
+        btn.disabled = true;
+        btn.innerText = "⏳ MENYIMPAN...";
+        msgDiv.style.color = "#FF9800";
+        msgDiv.innerText = "Sedang mengirim data ke Google Sheets...";
+
+        // Kumpulkan data JSON sesuai kolom spreadsheet
+        const payload = {
+            kopi: parseFloat(document.getElementById('kopi').value),
+            ratio: parseFloat(document.getElementById('ratio').value),
+            totalAir: parseFloat(document.getElementById('totalAir').value),
+            suhu: parseFloat(document.getElementById('suhu').value),
+            grindSize: document.getElementById('grindSize').value,
+            roastBeans: document.getElementById('roastBeans').value,
+            flavor: document.getElementById('flavor').value || "-",
+            acidity: document.getElementById('acidity').value || "-",
+            sweetness: document.getElementById('sweetness').value || "-",
+            body: document.getElementById('body').value || "-",
+            aftertaste: document.getElementById('aftertaste').value || "-",
+            tasteSummary: document.getElementById('tasteSummary').value
+        };
+
+        fetch(GOOGLE_SHEET_URL, {
+            method: "POST",
+            mode: "no-cors", // Mode aman bypass CORS untuk Apps Script Web App
+            headers: { "Content-Type": "application/json" },
+            b
