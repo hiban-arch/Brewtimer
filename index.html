@@ -5,46 +5,306 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brewing Time Tracker</title>
     
+    <!-- Import Font Montserrat & Roboto Mono untuk Angka Timer yang Stabil -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
-    /* CSS MODERN CLEAN (Ganti bagian <style> Anda dengan ini) */
-<style>
-    body { background-color: #edeae6; font-family: 'Helvetica Neue', sans-serif; padding: 20px; display: flex; justify-content: center; }
-    
-    .container { 
-        background-color: #ffffff; 
-        padding: 25px; 
-        border-radius: 24px; /* Sudut lebih membulat */
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* Bayangan lembut */
-        width: 100%; max-width: 450px; 
-    }
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+        }
+        
+        body { 
+            background-color: #f4f1ea; /* Warna latar hangat abu-abu kecokelatan */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            background-color: #ffffff; 
+            padding: 24px; 
+            border-radius: 24px; /* Sudut membulat modern */
+            box-shadow: 0 10px 30px rgba(74, 55, 40, 0.06); /* Bayangan halus */
+            width: 100%; 
+            max-width: 450px; 
+        }
 
-    .input-group input, .pouring-row input, .notes-area { 
-        border-radius: 12px; border: 1px solid #e0e0e0; padding: 12px; 
-    }
+        .app-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 700; 
+            color: #4a3728; 
+            text-align: center; 
+            margin-top: 5px; 
+            margin-bottom: 22px; 
+            font-size: 24px; 
+        }
 
-    .btn-control { 
-        border-radius: 50px; /* Tombol kapsul */
-        padding: 14px; font-size: 16px; 
-    }
+        .section-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 700; 
+            color: #4a3728; 
+            margin: 0;
+            font-size: 16px; 
+        }
 
-    .timer-box { 
-        background-color: #4a3728; 
-        border-radius: 20px; 
-        color: #fff; padding: 30px; 
-    }
+        /* Input Grid Parameter Atas */
+        .row { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 12px; 
+            width: 100%; 
+        }
+        
+        .input-group { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            min-width: 0; 
+        }
+        
+        .input-group label { 
+            font-size: 12px; 
+            font-weight: 600; 
+            color: #7c6350; 
+            margin-bottom: 6px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        
+        .input-group input { 
+            padding: 12px; 
+            border: 1.5px solid #e6dfd5; 
+            border-radius: 12px; 
+            font-size: 15px; 
+            outline: none; 
+            width: 100%; 
+            background-color: #faf9f6;
+            color: #4a3728;
+            transition: border-color 0.2s;
+        }
 
-    .btn-add { border-radius: 8px; }
+        .input-group input:focus {
+            border-color: #d4a373;
+        }
+        
+        .input-group input[readonly] { 
+            background-color: #f0ede6; 
+            color: #7c6350; 
+            border-color: #e6dfd5; 
+        }
+        
+        /* Bagian Interval Pouring */
+        .pouring-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+        
+        .btn-add { 
+            background-color: #d4a373; 
+            color: white; 
+            border: none; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 12px; 
+            font-weight: bold; 
+            transition: transform 0.1s;
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+        }
+
+        /* Baris Interval */
+        .pouring-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            background-color: #faf9f6; 
+            border: 1.5px solid #e6dfd5;
+            padding: 8px 10px; 
+            border-radius: 12px; 
+            margin-bottom: 8px; 
+        }
+        
+        .pour-number { 
+            font-size: 13px; 
+            font-weight: bold; 
+            width: 52px; 
+            color: #7c6350; 
+        }
+        
+        .status-badge { 
+            font-size: 12px; 
+            font-weight: bold; 
+            width: 72px; 
+            color: #4a3728; 
+            background-color: #eaddca; 
+            padding: 6px; 
+            border-radius: 8px; 
+            text-align: center; 
+        }
+        
+        .pouring-row input { 
+            flex: 1; 
+            min-width: 0; 
+            padding: 8px; 
+            border: 1.5px solid #e6dfd5; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 14px; 
+            background-color: #ffffff;
+        }
+
+        .pouring-row input:focus {
+            border-color: #d4a373;
+            outline: none;
+        }
+
+        .pouring-row input:disabled {
+            background-color: #f0ede6;
+            color: #7c6350;
+        }
+        
+        .btn-delete { 
+            background-color: #e63946; 
+            color: white; 
+            border: none; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 14px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+
+        .btn-delete:active {
+            transform: scale(0.9);
+        }
+
+        /* Kotak Timer Premium */
+        .timer-box { 
+            background-color: #4a3728; 
+            color: white; 
+            padding: 28px 20px; 
+            border-radius: 20px; 
+            text-align: center; 
+            margin-top: 24px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 8px 20px rgba(74, 55, 40, 0.12);
+        }
+        
+        .timer-display { 
+            font-family: 'Roboto Mono', monospace; 
+            font-size: 52px; 
+            font-weight: 700; 
+            margin-bottom: 4px; 
+            letter-spacing: 1px; 
+        }
+        
+        .status-display { 
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px; 
+            font-weight: 700; 
+            color: #d4a373; 
+            margin-bottom: 12px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        
+        .target-display { 
+            font-size: 16px; 
+            color: #ffffff; 
+            font-weight: 600; 
+            margin-bottom: 6px; 
+        }
+        
+        .next-pour-display { 
+            font-size: 13px; 
+            color: #ffb703; 
+            font-weight: 600; 
+            margin-bottom: 24px; 
+        }
+
+        /* Tombol Kontrol Timer */
+        .timer-controls { 
+            display: flex; 
+            gap: 12px; 
+            justify-content: center; 
+        }
+        
+        .btn-control { 
+            flex: 1; 
+            padding: 12px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            border: none; 
+            border-radius: 50px; /* Bentuk Kapsul/Pill */
+            cursor: pointer; 
+            max-width: 130px; 
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-start { 
+            background-color: #2a9d8f; 
+            color: white; 
+        }
+        
+        .btn-reset { 
+            background-color: #e63946; 
+            color: white; 
+        }
+
+        /* Area Catatan Rasa */
+        .footer-divider { 
+            border-top: 1.5px solid #e6dfd5; 
+            margin-top: 24px; 
+        }
+        
+        .notes-area { 
+            width: 100%; 
+            height: 95px; 
+            padding: 12px; 
+            border: 1.5px solid #e6dfd5; 
+            border-radius: 12px; 
+            background-color: #faf9f6;
+            font-size: 14px; 
+            resize: none; 
+            margin-top: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .notes-area:focus {
+            border-color: #d4a373;
+        }
     </style>
-    
 </head>
 <body>
 
 <div class="container">
-    <div class="app-title">⏱️ Brewing Timer</div>
+    <div class="app-title">⏱️ Brewing Time</div>
 
+    <!-- Parameter Input -->
     <div class="row">
         <div class="input-group">
             <label>Kopi (Dose gram)</label>
@@ -67,6 +327,7 @@
         </div>
     </div>
 
+    <!-- Container Interval -->
     <div class="pouring-header">
         <div class="section-title">Interval Pouring (Maks 10)</div>
         <button class="btn-add" onclick="tambahBaris()">+ Tambah</button>
@@ -96,12 +357,12 @@
         </div>
     </div>
 
-    <!-- Kotak Timer dengan Posisi Baru -->
+    <!-- Kotak Timer Premium -->
     <div class="timer-box">
         <div class="timer-display" id="timerDisplay">00:00</div>
         <div class="status-display" id="statusDisplay">READY</div>
         
-        <!-- Posisi Ditukar -->
+        <!-- Susunan Berurutan Sesuai Keinginan Anda -->
         <div class="target-display" id="targetDisplay">Target Air: 0g</div>
         <div class="next-pour-display" id="nextPourDisplay">Pouring selanjutnya: --</div>
         
@@ -111,8 +372,11 @@
         </div>
     </div>
 
+    <!-- Catatan Rasa -->
     <div class="footer-divider"></div>
-    <div class="section-title">Beans & Taste Notes</div>
+    <div class="pouring-header" style="margin-top: 15px; margin-bottom: 5px;">
+        <div class="section-title">Beans & Taste Notes</div>
+    </div>
     <textarea class="notes-area" placeholder="Contoh:&#10;Beans: Ethiopia Sidamo&#10;Taste Notes: Floral, Bergamot, Sweet Honey"></textarea>
 </div>
 
@@ -136,24 +400,42 @@
         rows.forEach((row, index) => {
             row.querySelector('.pour-number').innerText = `Pour ${index + 1}`;
             const badge = row.querySelector('.status-badge');
-            if (index === 0) { badge.innerText = 'Bloom'; badge.setAttribute('data-type', 'Bloom'); } 
-            else { badge.innerText = 'Pouring'; badge.setAttribute('data-type', 'Pouring'); }
+            if (index === 0) { 
+                badge.innerText = 'Bloom'; 
+                badge.setAttribute('data-type', 'Bloom'); 
+            } else { 
+                badge.innerText = 'Pouring'; 
+                badge.setAttribute('data-type', 'Pouring'); 
+            }
         });
     }
 
     function tambahBaris() {
-        if (isRunning) { alert("Interval tidak bisa ditambah saat timer berjalan!"); return; }
+        if (isRunning) { 
+            alert("Interval tidak bisa ditambah saat timer sedang berjalan!"); 
+            return; 
+        }
         const container = document.getElementById('pouringContainer');
         if (container.children.length >= 10) return;
+        
         const newRow = document.createElement('div');
         newRow.className = 'pouring-row';
-        newRow.innerHTML = `<span class="pour-number">Pour</span><span class="status-badge" data-type="Pouring">Pouring</span><input type="number" class="water-input" value="50" placeholder="gram"><input type="number" class="time-input" value="30" placeholder="detik"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
+        newRow.innerHTML = `
+            <span class="pour-number">Pour</span>
+            <span class="status-badge" data-type="Pouring">Pouring</span>
+            <input type="number" class="water-input" value="50" placeholder="gram">
+            <input type="number" class="time-input" value="30" placeholder="detik">
+            <button class="btn-delete" onclick="hapusBaris(this)">✕</button>
+        `;
         container.appendChild(newRow);
         urutkanUlangMekanikBaris();
     }
 
     function hapusBaris(button) {
-        if (isRunning) { alert("Interval tidak bisa dihapus saat timer berjalan!"); return; }
+        if (isRunning) { 
+            alert("Interval tidak bisa dihapus saat timer sedang berjalan!"); 
+            return; 
+        }
         button.parentElement.remove();
         urutkanUlangMekanikBaris();
     }
@@ -168,7 +450,12 @@
             const air = parseFloat(row.querySelector('.water-input').value) || 0;
             const durasi = parseInt(row.querySelector('.time-input').value) || 0;
             airKumulatif += air;
-            daftarLangkah.push({ nomor: idx + 1, tipe: tipe, durasi: durasi, targetAir: airKumulatif });
+            daftarLangkah.push({ 
+                nomor: idx + 1, 
+                tipe: tipe, 
+                durasi: durasi, 
+                targetAir: airKumulatif 
+            });
         });
     }
 
@@ -180,7 +467,12 @@
 
     function toggleTimer() {
         if (!isRunning) {
-            if (totalDetikBerjalan === 0) { susunRencanaSeduh(); if (daftarLangkah.length === 0) return; indeksLangkahSekarang = 0; detikDiLangkahSekarang = 0; }
+            if (totalDetikBerjalan === 0) { 
+                susunRencanaSeduh(); 
+                if (daftarLangkah.length === 0) return; 
+                indeksLangkahSekarang = 0; 
+                detikDiLangkahSekarang = 0; 
+            }
             isRunning = true;
             document.getElementById('btnStart').innerText = 'PAUSE';
             document.getElementById('btnStart').style.backgroundColor = '#f4a261';
@@ -197,7 +489,9 @@
 
     function toggleInputLock(isLocked) {
         const inputs = document.querySelectorAll('.water-input, .time-input');
-        inputs.forEach(input => { input.disabled = isLocked; });
+        inputs.forEach(input => { 
+            input.disabled = isLocked; 
+        });
     }
 
     function jalankanTimer() {
@@ -214,7 +508,10 @@
         totalDetikBerjalan++;
         detikDiLangkahSekarang++;
         const langkahAktif = daftarLangkah[indeksLangkahSekarang];
-        if (detikDiLangkahSekarang >= langkahAktif.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; }
+        if (detikDiLangkahSekarang >= langkahAktif.durasi) { 
+            indeksLangkahSekarang++; 
+            detikDiLangkahSekarang = 0; 
+        }
         perbaruiTampilanMekanik();
     }
 
@@ -225,6 +522,7 @@
             document.getElementById('statusDisplay').innerText = `${langkahAktif.tipe} (Pour ${langkahAktif.nomor})`;
             document.getElementById('targetDisplay').innerText = `Tuang sampai: ${langkahAktif.targetAir}g`;
             const sisaDetikLangkah = langkahAktif.durasi - detikDiLangkahSekarang;
+            
             if (indeksLangkahSekarang + 1 < daftarLangkah.length) {
                 const langkahBerikutnya = daftarLangkah[indeksLangkahSekarang + 1];
                 document.getElementById('nextPourDisplay').innerText = `Pour ${langkahBerikutnya.nomor} (${langkahBerikutnya.tipe}) dalam ${sisaDetikLangkah}s`;
