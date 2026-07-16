@@ -129,6 +129,7 @@
 </div>
 
 <script>
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXwH9qiEbayI47M9MT7ibdfzypDCGqGKomUBnPPNESPF31evl7MSL3Y7dG_j2bDers/exec";
     let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
 
     function hitungTotalAir() { const k = parseFloat(document.getElementById('kopi').value)||0; const r = parseFloat(document.getElementById('ratio').value)||0; document.getElementById('totalAir').value = k*r; }
