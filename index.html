@@ -3,550 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brewing Time Tracker</title>
-    
-    <!-- Import Font Montserrat & Roboto Mono untuk Angka Timer yang Stabil -->
+    <title>Brewing Tools</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #f4f1ea; font-family: -apple-system, sans-serif; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
+        .container { background-color: #ffffff; padding: 24px; border-radius: 24px; box-shadow: 0 10px 30px rgba(74, 55, 40, 0.06); width: 100%; max-width: 450px; }
+        .app-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; text-align: center; margin-bottom: 22px; font-size: 24px; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; margin: 0; font-size: 16px; }
         
-        body { 
-            background-color: #f4f1ea; /* Warna latar hangat abu-abu kecokelatan */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            padding: 15px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start;
-            min-height: 100vh;
-        }
+        /* Layout Input Parameter */
+        .row { display: flex; gap: 12px; margin-bottom: 12px; width: 100%; }
+        .input-group { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .input-group label { font-size: 12px; font-weight: 600; color: #7c6350; margin-bottom: 6px; }
+        .input-group input, .input-group select { padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; font-size: 14px; outline: none; background-color: #faf9f6; color: #4a3728; }
+        .input-group input[readonly] { background-color: #f0ede6; color: #7c6350; }
         
-        .container { 
-            background-color: #ffffff; 
-            padding: 24px; 
-            border-radius: 24px; /* Sudut membulat modern */
-            box-shadow: 0 10px 30px rgba(74, 55, 40, 0.06); /* Bayangan halus */
-            width: 100%; 
-            max-width: 450px; 
-        }
+        .pouring-header { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 12px; }
+        .btn-add { background-color: #d4a373; color: white; border: none; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
-        .app-title { 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 700; 
-            color: #4a3728; 
-            text-align: center; 
-            margin-top: 5px; 
-            margin-bottom: 22px; 
-            font-size: 24px; 
-        }
-
-        .section-title { 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 700; 
-            color: #4a3728; 
-            margin: 0;
-            font-size: 16px; 
-        }
-
-        /* Input Grid Parameter Atas */
-        .row { 
-            display: flex; 
-            gap: 12px; 
-            margin-bottom: 12px; 
-            width: 100%; 
-        }
-        
-        .input-group { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            min-width: 0; 
-        }
-        
-        .input-group label { 
-            font-size: 12px; 
-            font-weight: 600; 
-            color: #7c6350; 
-            margin-bottom: 6px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        }
-        
-        .input-group input { 
-            padding: 12px; 
-            border: 1.5px solid #e6dfd5; 
-            border-radius: 12px; 
-            font-size: 15px; 
-            outline: none; 
-            width: 100%; 
-            background-color: #faf9f6;
-            color: #4a3728;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: #d4a373;
-        }
-        
-        .input-group input[readonly] { 
-            background-color: #f0ede6; 
-            color: #7c6350; 
-            border-color: #e6dfd5; 
-        }
-        
-        /* Bagian Interval Pouring */
-        .pouring-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-top: 24px;
-            margin-bottom: 12px;
-        }
-        
-        .btn-add { 
-            background-color: #d4a373; 
-            color: white; 
-            border: none; 
-            padding: 8px 14px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-size: 12px; 
-            font-weight: bold; 
-            transition: transform 0.1s;
-        }
-
-        .btn-add:active {
-            transform: scale(0.95);
-        }
+        /* Header Label untuk Waktu dan Gram */
+        .pouring-labels { display: flex; gap: 8px; padding: 0 8px; margin-bottom: 6px; }
+        .label-col-badge { width: 80px; } /* Menyelaraskan dengan lebar badge "Bloom" / "Pour" */
+        .label-col-input { flex: 1; font-size: 11px; font-weight: 700; color: #7c6350; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .label-col-btn { width: 32px; } /* Menyelaraskan dengan tombol hapus (X) */
 
         /* Baris Interval */
-        .pouring-row { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            background-color: #faf9f6; 
-            border: 1.5px solid #e6dfd5;
-            padding: 8px 10px; 
-            border-radius: 12px; 
-            margin-bottom: 8px; 
-        }
-        
-        .pour-number { 
-            font-size: 13px; 
-            font-weight: bold; 
-            width: 52px; 
-            color: #7c6350; 
-        }
-        
-        .status-badge { 
-            font-size: 12px; 
-            font-weight: bold; 
-            width: 72px; 
-            color: #4a3728; 
-            background-color: #eaddca; 
-            padding: 6px; 
-            border-radius: 8px; 
-            text-align: center; 
-        }
-        
-        .pouring-row input { 
-            flex: 1; 
-            min-width: 0; 
-            padding: 8px; 
-            border: 1.5px solid #e6dfd5; 
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: 14px; 
-            background-color: #ffffff;
-        }
+        .pouring-row { display: flex; align-items: center; gap: 8px; background-color: #faf9f6; border: 1.5px solid #e6dfd5; padding: 8px; border-radius: 12px; margin-bottom: 8px; }
+        .status-badge { font-size: 11px; font-weight: bold; width: 80px; color: #4a3728; background-color: #eaddca; padding: 8px 5px; border-radius: 8px; text-align: center; }
+        .pouring-row input { flex: 1; min-width: 0; padding: 8px; border: 1.5px solid #e6dfd5; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600; color: #4a3728; }
+        .pouring-row input:focus { border-color: #d4a373; outline: none; }
+        .btn-delete { background-color: #e63946; color: white; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .pouring-row input:focus {
-            border-color: #d4a373;
-            outline: none;
-        }
+        /* Timer Box */
+        .timer-box { background-color: #4a3728; color: white; padding: 28px 20px; border-radius: 20px; text-align: center; margin-top: 24px; margin-bottom: 24px; }
+        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 52px; font-weight: 700; }
+        .status-display { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; color: #d4a373; margin-bottom: 12px; text-transform: uppercase; }
+        .target-display { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .next-pour-display { font-size: 13px; color: #ffb703; font-weight: 600; margin-bottom: 24px; }
+        .timer-controls { display: flex; gap: 12px; justify-content: center; }
+        .btn-control { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; max-width: 130px; }
+        .btn-start { background-color: #2a9d8f; color: white; }
+        .btn-reset { background-color: #e63946; color: white; }
 
-        .pouring-row input:disabled {
-            background-color: #f0ede6;
-            color: #7c6350;
-        }
-        
-        .btn-delete { 
-            background-color: #e63946; 
-            color: white; 
-            border: none; 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 14px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.1s;
-        }
+        /* Taste Notes & Input */
+        .taste-notes-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .taste-row { display: flex; align-items: center; gap: 10px; }
+        .taste-label { font-size: 13px; font-weight: 600; color: #7c6350; width: 85px; }
+        .taste-input { flex: 1; padding: 10px; border: 1.5px solid #e6dfd5; border-radius: 10px; font-size: 13px; background-color: #faf9f6; color: #4a3728; font-style: normal; outline: none; }
+        .taste-input:focus { border-color: #d4a373; }
+        .notes-area { width: 100%; height: 95px; padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; background-color: #faf9f6; font-size: 13.5px; margin-top: 12px; color: #4a3728; font-style: normal; outline: none; line-height: 1.4; }
+        .notes-area:focus { border-color: #d4a373; }
 
-        .btn-delete:active {
-            transform: scale(0.9);
-        }
-
-        /* Kotak Timer Premium */
-        .timer-box { 
-            background-color: #4a3728; 
-            color: white; 
-            padding: 28px 20px; 
-            border-radius: 20px; 
-            text-align: center; 
-            margin-top: 24px; 
-            margin-bottom: 24px; 
-            box-shadow: 0 8px 20px rgba(74, 55, 40, 0.12);
-        }
-        
-        .timer-display { 
-            font-family: 'Roboto Mono', monospace; 
-            font-size: 52px; 
-            font-weight: 700; 
-            margin-bottom: 4px; 
-            letter-spacing: 1px; 
-        }
-        
-        .status-display { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 18px; 
-            font-weight: 700; 
-            color: #d4a373; 
-            margin-bottom: 12px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
-        
-        .target-display { 
-            font-size: 16px; 
-            color: #ffffff; 
-            font-weight: 600; 
-            margin-bottom: 6px; 
-        }
-        
-        .next-pour-display { 
-            font-size: 13px; 
-            color: #ffb703; 
-            font-weight: 600; 
-            margin-bottom: 24px; 
-        }
-
-        /* Tombol Kontrol Timer */
-        .timer-controls { 
-            display: flex; 
-            gap: 12px; 
-            justify-content: center; 
-        }
-        
-        .btn-control { 
-            flex: 1; 
-            padding: 12px; 
-            font-size: 15px; 
-            font-weight: bold; 
-            border: none; 
-            border-radius: 50px; /* Bentuk Kapsul/Pill */
-            cursor: pointer; 
-            max-width: 130px; 
-            transition: transform 0.1s, background-color 0.2s;
-        }
-
-        .btn-control:active {
-            transform: scale(0.95);
-        }
-        
-        .btn-start { 
-            background-color: #2a9d8f; 
-            color: white; 
-        }
-        
-        .btn-reset { 
-            background-color: #e63946; 
-            color: white; 
-        }
-
-        /* Area Catatan Rasa */
-        .footer-divider { 
-            border-top: 1.5px solid #e6dfd5; 
-            margin-top: 24px; 
-        }
-        
-        .notes-area { 
-            width: 100%; 
-            height: 95px; 
-            padding: 12px; 
-            border: 1.5px solid #e6dfd5; 
-            border-radius: 12px; 
-            background-color: #faf9f6;
-            font-size: 14px; 
-            resize: none; 
-            margin-top: 10px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .notes-area:focus {
-            border-color: #d4a373;
+        /* Kustomisasi Placeholder Miring (Italic) */
+        .taste-input::placeholder, .notes-area::placeholder {
+            font-style: italic;
+            color: #a89f91;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="app-title">⏱️ Brewing Time</div>
+    <div class="app-title">⏱️ Brewing Timer Tools</div>
+    <div class="row"><div class="input-group"><label>Kopi (g)</label><input type="number" id="kopi" value="15" oninput="hitungTotalAir()"></div><div class="input-group"><label>Ratio (1:x)</label><input type="number" id="ratio" value="15" oninput="hitungTotalAir()"></div></div>
+    <div class="row"><div class="input-group"><label>Total Air (g)</label><input type="number" id="totalAir" value="225" readonly></div><div class="input-group"><label>Suhu (°C)</label><input type="number" id="suhu" value="92"></div></div>
+    <div class="row"><div class="input-group"><label>Grind</label><select id="grindSize"><option>Medium</option><option>Fine</option><option>Medium-Fine</option><option>Medium-Coarse</option><option>Coarse</option></select></div><div class="input-group"><label>Roast</label><select id="roastBeans"><option>Medium</option><option>Light</option><option>Medium-Light</option><option>Medium-Dark</option><option>Dark</option></select></div></div>
 
-    <!-- Parameter Input -->
-    <div class="row">
-        <div class="input-group">
-            <label>Kopi (Dose gram)</label>
-            <input type="number" id="kopi" value="15" oninput="hitungTotalAir()">
-        </div>
-        <div class="input-group">
-            <label>Ratio (1 : x)</label>
-            <input type="number" id="ratio" value="15" oninput="hitungTotalAir()">
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="input-group">
-            <label>Total Air (Otomatis)</label>
-            <input type="number" id="totalAir" value="225" readonly>
-        </div>
-        <div class="input-group">
-            <label>Suhu Air (°C)</label>
-            <input type="number" id="suhu" value="92">
-        </div>
-    </div>
-
-    <!-- Container Interval -->
-    <div class="pouring-header">
-        <div class="section-title">Interval Pouring (Maks 10)</div>
-        <button class="btn-add" onclick="tambahBaris()">+ Tambah</button>
-    </div>
+    <!-- Header Interval Seduh -->
+    <div class="pouring-header"><div class="section-title">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
     
-    <div id="pouringContainer">
-        <div class="pouring-row">
-            <span class="pour-number">Pour 1</span>
-            <span class="status-badge" data-type="Bloom">Bloom</span>
-            <input type="number" class="water-input" value="50" placeholder="gram">
-            <input type="number" class="time-input" value="45" placeholder="detik">
-            <button class="btn-delete" onclick="hapusBaris(this)">✕</button>
-        </div>
-        <div class="pouring-row">
-            <span class="pour-number">Pour 2</span>
-            <span class="status-badge" data-type="Pouring">Pouring</span>
-            <input type="number" class="water-input" value="100" placeholder="gram">
-            <input type="number" class="time-input" value="45" placeholder="detik">
-            <button class="btn-delete" onclick="hapusBaris(this)">✕</button>
-        </div>
-        <div class="pouring-row">
-            <span class="pour-number">Pour 3</span>
-            <span class="status-badge" data-type="Pouring">Pouring</span>
-            <input type="number" class="water-input" value="75" placeholder="gram">
-            <input type="number" class="time-input" value="45" placeholder="detik">
-            <button class="btn-delete" onclick="hapusBaris(this)">✕</button>
-        </div>
+    <!-- Penunjuk Label Kolom Atas -->
+    <div class="pouring-labels">
+        <span class="label-col-badge"></span>
+        <span class="label-col-input">Air (g)</span>
+        <span class="label-col-input">Waktu (s)</span>
+        <span class="label-col-btn"></span>
     </div>
 
-    <!-- Kotak Timer Premium -->
+    <div id="pouringContainer">
+        <div class="pouring-row"><span class="status-badge" data-type="Bloom">Bloom</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="45"><button class="btn-delete" onclick="hapusBaris(this)">✕</button></div>
+        <div class="pouring-row"><span class="status-badge" data-type="Pour 2">Pour 2</span><input type="number" class="water-input" value="100"><input type="number" class="time-input" value="45"><button class="btn-delete" onclick="hapusBaris(this)">✕</button></div>
+    </div>
+
+    <!-- Timer Control Box -->
     <div class="timer-box">
         <div class="timer-display" id="timerDisplay">00:00</div>
         <div class="status-display" id="statusDisplay">READY</div>
-        
-        <!-- Susunan Berurutan Sesuai Keinginan Anda -->
         <div class="target-display" id="targetDisplay">Target Air: 0g</div>
         <div class="next-pour-display" id="nextPourDisplay">Pouring selanjutnya: --</div>
-        
-        <div class="timer-controls">
-            <button class="btn-control btn-start" id="btnStart" onclick="toggleTimer()">START</button>
-            <button class="btn-control btn-reset" onclick="resetTimer()">RESET</button>
-        </div>
+        <div class="timer-controls"><button class="btn-control btn-start" id="btnStart" onclick="toggleTimer()">START</button><button class="btn-control btn-reset" onclick="resetTimer()">RESET</button></div>
     </div>
 
-    <!-- Catatan Rasa -->
-    <div class="footer-divider"></div>
-    <div class="pouring-header" style="margin-top: 15px; margin-bottom: 5px;">
-        <div class="section-title">Beans & Taste Notes</div>
+    <!-- Taste Notes Terstruktur dengan Placeholder Miring -->
+    <div class="section-title">Taste Notes</div>
+    <div class="taste-notes-container">
+        <div class="taste-row">
+            <span class="taste-label">Flavor</span>
+            <input type="text" class="taste-input" id="flavor" placeholder="Fruity red berry dan fruit jam">
+        </div>
+        <div class="taste-row">
+            <span class="taste-label">Acidity</span>
+            <input type="text" class="taste-input" id="acidity" placeholder="Juicy seperti apel merah">
+        </div>
+        <div class="taste-row">
+            <span class="taste-label">Sweetness</span>
+            <input type="text" class="taste-input" id="sweetness" placeholder="Tinggi menyerupai gula aren">
+        </div>
+        <div class="taste-row">
+            <span class="taste-label">Body</span>
+            <input type="text" class="taste-input" id="body" placeholder="Medium round">
+        </div>
+        <div class="taste-row">
+            <span class="taste-label">Aftertaste</span>
+            <input type="text" class="taste-input" id="aftertaste" placeholder="Fruity panjang">
+        </div>
     </div>
-    <textarea class="notes-area" placeholder="Contoh:&#10;Beans: Ethiopia Sidamo&#10;Taste Notes: Floral, Bergamot, Sweet Honey"></textarea>
+    
+    <!-- Kesimpulan dengan Placeholder Gabungan Terstruktur -->
+    <textarea class="notes-area" id="tasteSummary" placeholder="Fruity red berry dan fruit jam. Sweetness tinggi menyerupai gula aren, acidity juicy seperti apel merah, body medium round, dengan aftertaste fruity panjang."></textarea>
 </div>
 
 <script>
-    let timerInterval = null;
-    let totalDetikBerjalan = 0;
-    let isRunning = false;
-    let daftarLangkah = [];
-    let indeksLangkahSekarang = 0;
-    let detikDiLangkahSekarang = 0;
-    let airKumulatif = 0;
+    let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
 
-    function hitungTotalAir() {
-        const kopi = parseFloat(document.getElementById('kopi').value) || 0;
-        const ratio = parseFloat(document.getElementById('ratio').value) || 0;
-        document.getElementById('totalAir').value = kopi * ratio;
-    }
-
+    function hitungTotalAir() { const k = parseFloat(document.getElementById('kopi').value)||0; const r = parseFloat(document.getElementById('ratio').value)||0; document.getElementById('totalAir').value = k*r; }
+    
     function urutkanUlangMekanikBaris() {
         const rows = document.querySelectorAll('.pouring-row');
         rows.forEach((row, index) => {
-            row.querySelector('.pour-number').innerText = `Pour ${index + 1}`;
             const badge = row.querySelector('.status-badge');
-            if (index === 0) { 
-                badge.innerText = 'Bloom'; 
-                badge.setAttribute('data-type', 'Bloom'); 
-            } else { 
-                badge.innerText = 'Pouring'; 
-                badge.setAttribute('data-type', 'Pouring'); 
-            }
+            if (index === 0) { badge.innerText = 'Bloom'; badge.setAttribute('data-type', 'Bloom'); }
+            else { badge.innerText = `Pour ${index + 1}`; badge.setAttribute('data-type', `Pour ${index + 1}`); }
         });
     }
 
     function tambahBaris() {
-        if (isRunning) { 
-            alert("Interval tidak bisa ditambah saat timer sedang berjalan!"); 
-            return; 
-        }
+        if (isRunning) return;
         const container = document.getElementById('pouringContainer');
         if (container.children.length >= 10) return;
-        
         const newRow = document.createElement('div');
         newRow.className = 'pouring-row';
-        newRow.innerHTML = `
-            <span class="pour-number">Pour</span>
-            <span class="status-badge" data-type="Pouring">Pouring</span>
-            <input type="number" class="water-input" value="50" placeholder="gram">
-            <input type="number" class="time-input" value="30" placeholder="detik">
-            <button class="btn-delete" onclick="hapusBaris(this)">✕</button>
-        `;
+        newRow.innerHTML = `<span class="status-badge" data-type="Pour">Pour</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="30"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
         container.appendChild(newRow);
         urutkanUlangMekanikBaris();
     }
 
-    function hapusBaris(button) {
-        if (isRunning) { 
-            alert("Interval tidak bisa dihapus saat timer sedang berjalan!"); 
-            return; 
-        }
-        button.parentElement.remove();
-        urutkanUlangMekanikBaris();
-    }
+    function hapusBaris(btn) { if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } }
 
     function susunRencanaSeduh() {
-        daftarLangkah = [];
-        const rows = document.querySelectorAll('.pouring-row');
-        airKumulatif = 0;
-        rows.forEach((row, idx) => {
-            const badge = row.querySelector('.status-badge');
-            const tipe = badge.getAttribute('data-type');
-            const air = parseFloat(row.querySelector('.water-input').value) || 0;
-            const durasi = parseInt(row.querySelector('.time-input').value) || 0;
+        daftarLangkah = []; airKumulatif = 0;
+        document.querySelectorAll('.pouring-row').forEach((row, idx) => {
+            const air = parseFloat(row.querySelector('.water-input').value)||0;
+            const durasi = parseInt(row.querySelector('.time-input').value)||0;
             airKumulatif += air;
-            daftarLangkah.push({ 
-                nomor: idx + 1, 
-                tipe: tipe, 
-                durasi: durasi, 
-                targetAir: airKumulatif 
-            });
+            daftarLangkah.push({ tipe: row.querySelector('.status-badge').innerText, durasi, targetAir: airKumulatif });
         });
-    }
-
-    function formatWaktu(totalDetik) {
-        const menit = Math.floor(totalDetik / 60).toString().padStart(2, '0');
-        const detik = (totalDetik % 60).toString().padStart(2, '0');
-        return `${menit}:${detik}`;
     }
 
     function toggleTimer() {
         if (!isRunning) {
-            if (totalDetikBerjalan === 0) { 
-                susunRencanaSeduh(); 
-                if (daftarLangkah.length === 0) return; 
-                indeksLangkahSekarang = 0; 
-                detikDiLangkahSekarang = 0; 
-            }
-            isRunning = true;
-            document.getElementById('btnStart').innerText = 'PAUSE';
-            document.getElementById('btnStart').style.backgroundColor = '#f4a261';
-            toggleInputLock(true);
+            if (totalDetikBerjalan === 0) { susunRencanaSeduh(); if(daftarLangkah.length===0) return; }
+            isRunning = true; document.getElementById('btnStart').innerText = 'PAUSE'; document.getElementById('btnStart').style.backgroundColor = '#f4a261';
+            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=true);
             timerInterval = setInterval(jalankanTimer, 1000);
-            perbaruiTampilanMekanik();
         } else {
-            isRunning = false;
-            document.getElementById('btnStart').innerText = 'START';
-            document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
+            isRunning = false; document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
             clearInterval(timerInterval);
         }
-    }
-
-    function toggleInputLock(isLocked) {
-        const inputs = document.querySelectorAll('.water-input, .time-input');
-        inputs.forEach(input => { 
-            input.disabled = isLocked; 
-        });
     }
 
     function jalankanTimer() {
         if (indeksLangkahSekarang >= daftarLangkah.length) {
-            clearInterval(timerInterval);
-            document.getElementById('statusDisplay').innerText = 'SELESAI 🎉';
-            document.getElementById('nextPourDisplay').innerText = 'Seduhan selesai!';
+            clearInterval(timerInterval); isRunning = false;
+            document.getElementById('statusDisplay').innerText = 'SELESAI';
             document.getElementById('btnStart').innerText = 'START';
-            document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
-            isRunning = false;
-            toggleInputLock(false);
+            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
             return;
         }
-        totalDetikBerjalan++;
-        detikDiLangkahSekarang++;
-        const langkahAktif = daftarLangkah[indeksLangkahSekarang];
-        if (detikDiLangkahSekarang >= langkahAktif.durasi) { 
-            indeksLangkahSekarang++; 
-            detikDiLangkahSekarang = 0; 
-        }
-        perbaruiTampilanMekanik();
-    }
-
-    function perbaruiTampilanMekanik() {
-        document.getElementById('timerDisplay').innerText = formatWaktu(totalDetikBerjalan);
-        if (indeksLangkahSekarang < daftarLangkah.length) {
-            const langkahAktif = daftarLangkah[indeksLangkahSekarang];
-            document.getElementById('statusDisplay').innerText = `${langkahAktif.tipe} (Pour ${langkahAktif.nomor})`;
-            document.getElementById('targetDisplay').innerText = `Tuang sampai: ${langkahAktif.targetAir}g`;
-            const sisaDetikLangkah = langkahAktif.durasi - detikDiLangkahSekarang;
-            
-            if (indeksLangkahSekarang + 1 < daftarLangkah.length) {
-                const langkahBerikutnya = daftarLangkah[indeksLangkahSekarang + 1];
-                document.getElementById('nextPourDisplay').innerText = `Pour ${langkahBerikutnya.nomor} (${langkahBerikutnya.tipe}) dalam ${sisaDetikLangkah}s`;
-            } else {
-                document.getElementById('nextPourDisplay').innerText = `Selesai dalam ${sisaDetikLangkah}s`;
-            }
-        }
+        totalDetikBerjalan++; detikDiLangkahSekarang++;
+        const langkah = daftarLangkah[indeksLangkahSekarang];
+        if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; }
+        
+        document.getElementById('timerDisplay').innerText = `${Math.floor(totalDetikBerjalan/60).toString().padStart(2,'0')}:${(totalDetikBerjalan%60).toString().padStart(2,'0')}`;
+        document.getElementById('statusDisplay').innerText = langkah.tipe;
+        document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
+        document.getElementById('nextPourDisplay').innerText = (indeksLangkahSekarang+1 < daftarLangkah.length) ? `Next: ${daftarLangkah[indeksLangkahSekarang+1].tipe}` : "Selesai";
     }
 
     function resetTimer() {
-        clearInterval(timerInterval);
-        isRunning = false;
-        totalDetikBerjalan = 0;
-        indeksLangkahSekarang = 0;
-        detikDiLangkahSekarang = 0;
-        document.getElementById('timerDisplay').innerText = '00:00';
-        document.getElementById('statusDisplay').innerText = 'READY';
-        document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: --';
-        document.getElementById('targetDisplay').innerText = 'Target Air: 0g';
+        clearInterval(timerInterval); isRunning = false; totalDetikBerjalan = 0; indeksLangkahSekarang = 0; detikDiLangkahSekarang = 0;
+        document.getElementById('timerDisplay').innerText = '00:00'; document.getElementById('statusDisplay').innerText = 'READY';
+        document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
         document.getElementById('btnStart').innerText = 'START';
-        document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
-        toggleInputLock(false);
     }
 </script>
-
 </body>
 </html>
