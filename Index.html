@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brewing Time Tracker</title>
+    <style>
+        :root {
+            --bg-color: #f7f9fa;
+            --card-bg: #ffffff;
+            --primary: #4a3728;
+            --accent: #d4a373;
+            --text: #2b2d42;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 { text-align: center; color: var(--primary); margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, textarea, select {
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px;
+        }
+        .row { display: flex; gap: 15px; }
+        .row .form-group { flex: 1; }
+        .readonly-input { background-color: #e9ecef; font-weight: bold; }
+        
+        /* Pouring Section */
+        .pour-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; }
+        .pour-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 8px; }
+        .pour-row span { font-weight: bold; min-width: 70px; }
+        .btn-add { background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-danger { background: #e63946; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; }
+        
+        /* Timer Section */
+        .timer-box { text-align: center; background: var(--primary); color: white; padding: 20px; border-radius: 12px; margin-top: 30px; margin-bottom: 25px; }
+        .timer-display { font-size: 48px; font-weight: bold; font-family: monospace; letter-spacing: 2px; }
+        .status-display { font-size: 20px; font-weight: bold; color: var(--accent); margin-top: 5px; text-transform: uppercase; }
+        .next-pour-display { font-size: 14px; margin-top: 5px; color: #ffb703; font-weight: 500; }
+        .water-target-display { font-size: 16px; margin-top: 5px; color: #dddddd; }
+        
+        .controls { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-control { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-start { background: #2a9d8f; color: white; }
+        .btn-stop { background: #e63946; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⏱️ Brewing Time</h1>
+
+    <!-- Base Calculator -->
+    <div class="row">
+        <div class="form-group">
+            <label>Kopi (Dose gram)</label>
+            <input type="number" id="coffee" value="15" step="0.1" oninput="calculateTotalWater()">
+        </div>
+        <div class="form-group">
+            <label>Ratio (1 : x)</label>
+            <input type="number" id="ratio" value="15" step="0.5" oninput="calculateTotalWater()">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group">
+            <label>Total Air (Otomatis)</label>
+            <input type="number" id="totalWater" class="readonly-input" readonly value="225">
+        </div>
+        <div class="form-group">
+            <label>Suhu Air (°C)</label>
+            <input type="number" id="temp" value="92">
+        </div>
+    </div>
+
+    <!-- Interval Pouring -->
+    <div class="pour-header">
+        <h3>Interval Pouring (Maks 10)</h3>
+        <button type="button" class="btn-add" onclick="addPourRow()">+ Tambah</button>
+    </div>
+    <div id="pourContainer">
+        <!-- Baris pouring akan digenerate via JS -->
+    </div>
+
+    <!-- Timer Display -->
+    <div class="timer-box">
+        <div class="timer-display" id="timer">00:00</div>
+        <div class="status-display" id="status">READY</div>
+        <div class="next-pour-display" id="nextPourInfo">Pouring selanjutnya: --</div>
+        <div class="water-target-display" id="waterTarget">Target Air: 0g</div>
+        
+        <div class="controls">
+            <button class="btn-control btn-start" id="startBtn" onclick="toggleTimer()">START</button>
+            <button class="btn-control btn-stop" onclick="resetTimer()">RESET</button>
+        </div>
+    </div>
+    
+    <!-- Notes Section (Berada di paling bawah) -->
+    <div class="form-group" style="border-top: 1px solid #eee; padding-top: 20px;">
+        <label>Beans & Taste Notes</label>
+        <textarea id="notes" rows="3" placeholder="Contoh:&#10;Beans: Ethiopia Sidamo&#10;Taste Notes: Floral, Bergamot, Sweet Honey..."></textarea>
+    </div>
+</div>
+
+<script>
+    let pourCount = 0;
+    let timerInterval = null;
+    let isRunning = false;
+    let startTime = 0;
+    let elapsedTime = 0; 
+    let timeline = []; 
+
+    window.onload = function() {
+        addPourRow("Bloom", 50, 45);
+        addPourRow("Pouring", 100, 45);
+        addPourRow("Pouring", 75, 45);
+        calculateTotalWater();
+    }
+
+    function calculateTotalWater() {
+        const coffee = parseFloat(document.getElementById('coffee').value) || 0;
+        const ratio = parseFloat(document.getElementById('ratio').value) || 0;
+        const total = coffee * ratio;
+        document.getElementById('totalWater').value = total;
+    }
+
+    function addPourRow(name = "", water = "", duration = "") {
+        if (pourCount >= 10) {
+            alert("Maksimal 10 interval pouring!");
+            return;
+        }
+        pourCount++;
+        const container = document.getElementById('pourContainer');
+        
+        const row = document.createElement('div');
+        row.className = 'pour-row';
+        row.id = `pour_row_${pourCount}`;
+        row.innerHTML = `
+            <span>Pour ${pourCount}</span>
+            <select class="pour-type">
+                <option value="Bloom" ${name === 'Bloom' ? 'selected' : ''}>Bloom</option>
+                <option value="Pouring" ${name !== 'Bloom' ? 'selected' : ''}>Pouring</option>
+            </select>
+            <input type="number" class="pour-water" placeholder="Air (g)" value="${water}" required>
+            <input type="number" class="pour-time" placeholder="Waktu (s)" value="${duration}" required>
+            <button type="button" class="btn-danger" onclick="removePourRow(${pourCount})">✕</button>
+        `;
+        container.appendChild(row);
+        updateRowLabels();
+    }
+
+    function removePourRow(id) {
+        const row = document.getElementById(`pour_row_${id}`);
+        row.remove();
+        pourCount--;
+        updateRowLabels();
+    }
+
+    function updateRowLabels() {
+        const rows = document.querySelectorAll('.pour-row');
+        pourCount = 0;
+        rows.forEach((row, index) => {
+            pourCount++;
+            row.id = `pour_row_${pourCount}`;
+            row.querySelector('span').innerText = `Pour ${pourCount}`;
+            row.querySelector('.btn-danger').setAttribute('onclick', `removePourRow(${pourCount})`);
+        });
+    }
+
+    function buildTimeline() {
+        timeline = [];
+        const types = document.querySelectorAll('.pour-type');
+        const waters = document.querySelectorAll('.pour-water');
+        const times = document.querySelectorAll('.pour-time');
+        
+        let currentTargetWater = 0;
+        let accumulatedTime = 0;
+
+        for(let i = 0; i < types.length; i++) {
+            const type = types[i].value;
+            const water = parseFloat(waters[i].value) || 0;
+            const duration = parseInt(times[i].value) || 0;
+
+            currentTargetWater += water;
+            accumulatedTime += duration;
+
+            timeline.push({
+                label: `Pour ${i + 1} (${type})`,
+                type: type,
+                endTime: accumulatedTime, 
+                targetWater: currentTargetWater
+            });
+        }
+    }
+
+    function toggleTimer() {
+        if (!isRunning) {
+            buildTimeline();
+            if(timeline.length === 0) {
+                alert("Harap tambahkan minimal 1 interval pouring.");
+                return;
+            }
+            isRunning = true;
+            document.getElementById('startBtn').innerText = "PAUSE";
+            document.getElementById('startBtn').style.background = "#f4a261";
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTimer, 100);
+        } else {
+            isRunning = false;
+            document.getElementById('startBtn').innerText = "RESUME";
+            document.getElementById('startBtn').style.background = "#2a9d8f";
+            clearInterval(timerInterval);
+        }
+    }
+
+    function resetTimer() {
+        isRunning = false;
+        clearInterval(timerInterval);
+        elapsedTime = 0;
+        document.getElementById('timer').innerText = "00:00";
+        document.getElementById('status').innerText = "READY";
+        document.getElementById('nextPourInfo').innerText = "Pouring selanjutnya: --";
+        document.getElementById('waterTarget').innerText = "Target Air: 0g";
+        document.getElementById('startBtn').innerText = "START";
+        document.getElementById('startBtn').style.background = "#2a9d8f";
+    }
+
+    function updateTimer() {
+        elapsedTime = Date.now() - startTime;
+        const totalSeconds = Math.floor(elapsedTime / 1000);
+        
+        const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${minutes}:${seconds}`;
+
+        let currentStepIndex = timeline.findIndex(step => totalSeconds < step.endTime);
+
+        if (currentStepIndex !== -1) {
+            const currentStep = timeline[currentStepIndex];
+            document.getElementById('status').innerText = currentStep.type;
+            document.getElementById('waterTarget').innerText = `Tuang sampai: ${currentStep.targetWater}g`;
+            
+            let remainingSeconds = currentStep.endTime - totalSeconds;
+            
+            if (currentStepIndex + 1 < timeline.length) {
+                const nextStep = timeline[currentStepIndex + 1];
+                document.getElementById('nextPourInfo').innerText = `${nextStep.label} dalam ${remainingSeconds}s`;
+            } else {
+                document.getElementById('nextPourInfo').innerText = `Selesai dalam ${remainingSeconds}s`;
+            }
+        } else {
+            document.getElementById('status').innerText = "SELESAI 🎉";
+            document.getElementById('nextPourInfo').innerText = "Proses seduh selesai!";
+            const lastStep = timeline[timeline.length - 1];
+            document.getElementById('waterTarget').innerText = `Total Air Akhir: ${lastStep ? lastStep.targetWater : 0}g`;
+            clearInterval(timerInterval);
+            isRunning = false;
+            document.getElementById('startBtn').innerText = "START";
+        }
+    }
+</script>
+
+</body>
+</html>
