@@ -69,7 +69,7 @@
 <body>
 
 <div class="container">
-    <div class="app-title">⏱️ Brewing Timer Tools</div>
+    <div class="app-title">BREWING TIMER TOOLS</div>
     <div class="row"><div class="input-group"><label>Kopi (g)</label><input type="number" id="kopi" value="15" oninput="hitungTotalAir()"></div><div class="input-group"><label>Ratio (1:x)</label><input type="number" id="ratio" value="15" oninput="hitungTotalAir()"></div></div>
     <div class="row"><div class="input-group"><label>Total Air (g)</label><input type="number" id="totalAir" value="225" readonly></div><div class="input-group"><label>Suhu (°C)</label><input type="number" id="suhu" value="92"></div></div>
     <div class="row"><div class="input-group"><label>Grind</label><select id="grindSize"><option>Medium</option><option>Fine</option><option>Medium-Fine</option><option>Medium-Coarse</option><option>Coarse</option></select></div><div class="input-group"><label>Roast</label><select id="roastBeans"><option>Medium</option><option>Light</option><option>Medium-Light</option><option>Medium-Dark</option><option>Dark</option></select></div></div>
@@ -128,6 +128,12 @@
     <textarea class="notes-area" id="tasteSummary" placeholder="Fruity red berry dan fruit jam. Sweetness tinggi menyerupai gula aren, acidity juicy seperti apel merah, body medium round, dengan aftertaste fruity panjang."></textarea>
 </div>
 
+    <!-- Pastikan blok kode ini ada di bawah textarea dan di atas <script> -->
+    <div class="submit-container">
+        <button class="btn-submit" id="btnSubmit" onclick="kirimDataKeSheets()">💾 SAVE HISTORY</button>
+        <div class="status-msg" id="statusMsg"></div>
+    </div>
+    
 <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXwH9qiEbayI47M9MT7ibdfzypDCGqGKomUBnPPNESPF31evl7MSL3Y7dG_j2bDers/exec";
     let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
