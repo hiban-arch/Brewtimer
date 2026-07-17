@@ -1,0 +1,22 @@
+{
+  "name": "Brewing Tools Hybrid",
+  "short_name": "BrewTimer",
+  "description": "Alat bantu seduh kopi dengan pencatatan hibrida offline-first.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#4a3728",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233475.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233475.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
