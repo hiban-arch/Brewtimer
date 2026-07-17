@@ -159,23 +159,25 @@
             border-radius: 14px;
             margin-bottom: 16px;
         }
-        .preset-controls { 
-            display: flex; 
-            gap: 6px; 
-            margin-top: 8px; 
-            align-items: center;
-            width: 100%;
-        }
-        .preset-select { 
-            flex: 2; 
-            padding: 8px 6px; 
-            border-radius: 8px; 
-            border: 1.5px solid var(--border-color); 
-            background-color: var(--bg-container); 
-            color: var(--text-main); 
-            font-size: 12px;
-            min-width: 0;
-        }
+        .preset-controls {
+    display: flex;
+    flex-direction: column; /* Membuat susunan vertikal ke bawah */
+    gap: 10px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.preset-select {
+    width: 100%; /* Dropdown memanjang penuh */
+    padding: 12px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-color);
+    background-color: var(--bg-container);
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 600;
+}
+        
         .btn-preset-save { 
             background-color: #2a9d8f; 
             color: white; 
@@ -281,14 +283,19 @@
 
     <!-- 3. Panel Preset Manager -->
     <div class="preset-box">
-        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Preset Resep (Max 5)</label>
-        <div class="preset-controls">
-            <select class="preset-select" id="presetSelect" onchange="muatPresetIni()">
-                <option value="">-- Pilih / Muat Preset --</option>
-            </select>
+    <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Preset Resep (Max 5)</label>
+    <div class="preset-controls">
+        <!-- Dropdown di baris atas -->
+        <select class="preset-select" id="presetSelect" onchange="muatPresetIni()">
+            <option value="">-- Pilih / Muat Preset --</option>
+        </select>
+        
+        <!-- Pembungkus baru agar tombol Simpan & Hapus berdampingan di baris bawah -->
+        <div style="display: flex; gap: 8px; width: 100%;">
             <button class="btn-preset-save" onclick="simpanPresetBaru()">Simpan</button>
             <button class="btn-preset-del" onclick="hapusPresetTerpilih()">Hapus</button>
         </div>
+    </div>
     </div>
 
     <div class="row"><div class="input-group"><label>Kopi (g)</label><input type="number" id="kopi" value="15" oninput="hitungTotalAir()"></div><div class="input-group"><label>Ratio (1:x)</label><input type="number" id="ratio" value="15" oninput="hitungTotalAir()"></div></div>
