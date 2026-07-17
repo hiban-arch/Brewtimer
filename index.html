@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brewing Tools - Hybrid Edition</title>
+    <title>Brewing Tools - By Hiban</title>
+    
+    <!-- --- KONEKSI PWA & OPTIMALISASI MOBILE --- -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="BrewTimer">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233475.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
@@ -275,6 +283,44 @@
     // URL Web App Google Apps Script Anda yang aktif
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyB5p48lpGd8o80RSZXjGFV9iKOI35I7Cx6ftZHYMxLSTCPHyK3YVub9HNP9MKnZf76/exec";
     
+    // --- INTEGRASI STRUKTUR DATABASE LOKAL (IndexedDB) ---
+    const DB_NAME = 'brew-offline-db';
+    const STORE_NAME = 'outbox';
+
+    function bukaDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                }
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    async function simpanKeAntreanLokal(payload) {
+        const db = await bukaDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.add({ url: GOOGLE_SHEET_URL, payload: payload });
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    // --- STRUKTUR REGISTRASI SERVICE WORKER OTOMATIS ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker terdaftar:', reg.scope))
+                .catch(err => console.error('Gagal daftarkan Service Worker:', err));
+        });
+    }
+
     let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
     let audioCtx = null;
 
@@ -308,7 +354,6 @@
         nama = nama.trim();
         if (nama === "") return;
 
-        // Validasi Limitasi Ketat: Maksimal 5 Preset
         if (keys.length >= 5 && !daftarPreset[nama]) {
             alert(`⚠️ Batas Kuota Tercapai! Anda sudah memiliki 5 resep.\nSilakan pilih resep yang ada di dropdown lalu klik 'Hapus' terlebih dahulu.`);
             return;
@@ -373,16 +418,15 @@
         }
     }
 
-    // --- TRANSMISI DATA ONLINE KE GOOGLE SHEETS ---
-    function kirimDataKeSheets() {
-        const btn = document.getElementById('btnSubmit'); const msg = document.getElementById('statusMsg');
-        btn.disabled = true; btn.innerText = "⏳ SAVING TO CLOUD...";
-        msg.style.color = "var(--text-muted)"; msg.innerText = "Mengirim data ke Google Sheets...";
-
+    // --- MODIFIKASI: STRUKTUR TRANSMISI DATA HYBRID (ONLINE / OFFLINE) ---
+    async function kirimDataKeSheets() {
+        const btn = document.getElementById('btnSubmit'); 
+        const msg = document.getElementById('statusMsg');
+        
         const currentPreset = document.getElementById('presetSelect').value || "Manual";
 
         const payload = {
-            presetNama: currentPreset, // Info resep yang digunakan ikut terkirim ke log cloud
+            presetNama: currentPreset,
             kopi: document.getElementById('kopi').value,
             ratio: document.getElementById('ratio').value,
             totalAir: document.getElementById('totalAir').value,
@@ -397,6 +441,31 @@
             tasteSummary: document.getElementById('tasteSummary').value
         };
 
+        // KONDISI LOGIS 1: JIKA TERDETEKSI OFFLINE
+        if (!navigator.onLine) {
+            try {
+                await simpanKeAntreanLokal(payload);
+                
+                // Mendaftarkan antrean ke Service Worker Background Sync
+                if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                    const reg = await navigator.serviceWorker.ready;
+                    await reg.sync.register('sync-history');
+                }
+                
+                msg.style.color = "#f4a261"; 
+                msg.innerText = "⏳ Offline: Disimpan di HP. Otomatis terkirim saat internet ada!";
+            } catch (err) {
+                msg.style.color = "#e63946";
+                msg.innerText = "✗ Gagal menyimpan data lokal internal.";
+                console.error(err);
+            }
+            return;
+        }
+
+        // KONDISI LOGIS 2: JIKA ONLINE (PROSES BIASA)
+        btn.disabled = true; btn.innerText = "⏳ SAVING TO CLOUD...";
+        msg.style.color = "var(--text-muted)"; msg.innerText = "Mengirim data ke Google Sheets...";
+
         fetch(GOOGLE_SHEET_URL, {
             method: "POST",
             mode: "no-cors",
@@ -407,9 +476,11 @@
             btn.disabled = false; btn.innerText = "💾 SAVE HISTORY";
             msg.style.color = "#2a9d8f"; msg.innerText = "✓ Data berhasil disimpan ke Google Sheets!";
         })
-        .catch(err => {
+        .catch(async (err) => {
+            // KONDISI FALLBACK: Jika ditengah kirim sinyal putus, amankan ke database lokal
+            await simpanKeAntreanLokal(payload);
             btn.disabled = false; btn.innerText = "💾 SAVE HISTORY";
-            msg.style.color = "#e63946"; msg.innerText = "✗ Gagal menyimpan data.";
+            msg.style.color = "#f4a261"; msg.innerText = "⏳ Koneksi terganggu. Dialihkan ke antrean HP.";
             console.error(err);
         });
     }
