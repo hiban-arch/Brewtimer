@@ -5,7 +5,7 @@ const CACHE_NAME = 'brewtimer-v2';
 const ASSETS = [
   'index.html',
   'manifest.json'
-  'icon.png'
+  'icon22.png'
 ];
 
 // Inisialisasi Database Lokal di Service Worker
