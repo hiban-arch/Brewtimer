@@ -1,5 +1,5 @@
 {
-  "name": "Brewing Tools - Hybrid Edition",
+  "name": "Brewing Tools - By Hiban",
   "short_name": "BrewTimer",
   "start_url": "index.html",
   "display": "standalone",
@@ -7,7 +7,7 @@
   "theme-color": "#4a3728",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon22.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
