@@ -3,115 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brewing Tools</title>
+    <title>Brewing Tools - Hybrid Edition</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #f4f1ea; font-family: -apple-system, sans-serif; padding: 15px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { background-color: #ffffff; padding: 24px; border-radius: 24px; box-shadow: 0 10px 30px rgba(74, 55, 40, 0.06); width: 100%; max-width: 450px; }
-        .app-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; text-align: center; margin-bottom: 22px; font-size: 24px; }
-        .section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #4a3728; margin: 0; font-size: 16px; }
+        /* --- VARIABLE WARNA --- */
+        :root {
+            --bg-body: #f4f1ea;
+            --bg-container: #ffffff;
+            --text-main: #4a3728;
+            --text-muted: #7c6350;
+            --border-color: #e6dfd5;
+            --bg-input: #faf9f6;
+            --bg-readonly: #f0ede6;
+            --bg-badge: #eaddca;
+            --shadow-color: rgba(74, 55, 40, 0.06);
+            --transition-speed: 0.3s;
+            --ring-bg: #eaddca;
+            --ring-active: #d4a373;
+        }
+
+        body.dark-mode {
+            --bg-body: #121212;
+            --bg-container: #1e1b18;
+            --text-main: #f4f1ea;
+            --text-muted: #a89f91;
+            --border-color: #2e2924;
+            --bg-input: #282420;
+            --bg-readonly: #1a1715;
+            --bg-badge: #3e3227;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --ring-bg: #2e2924;
+            --ring-active: #588157;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease, 
+                        border-color var(--transition-speed) ease, 
+                        box-shadow var(--transition-speed) ease;
+        }
+
+        body { 
+            background-color: var(--bg-body); 
+            font-family: -apple-system, sans-serif; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh; 
+        }
+
+        .container { 
+            position: relative; 
+            background-color: var(--bg-container); 
+            padding: 24px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px var(--shadow-color); 
+            width: 100%; 
+            max-width: 450px; 
+        }
+
+        .app-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            text-align: left; 
+            margin-bottom: 22px; 
+            font-size: 20px; 
+            padding-right: 110px; 
+        }
+
+        .section-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            margin: 20px 0 10px 0; 
+            font-size: 16px; 
+        }
+
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .theme-switch-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 20px;
+            position: relative;
+            width: 38px;
+        }
+
+        .theme-switch input { display: none; }
+
+        .slider {
+            background-color: var(--border-color); 
+            bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .slider:before {
+            background-color: #ffffff; bottom: 3px; content: ""; height: 14px; left: 3px;
+            position: absolute; transition: transform 0.3s ease; width: 14px;
+        }
+
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+        input:checked + .slider { background-color: #588157; }
+        input:checked + .slider:before { transform: translateX(18px); }
         
-        /* Layout Input Parameter */
+        /* --- PRESET MANAGER --- */
+        .preset-box {
+            background-color: var(--bg-input);
+            border: 1.5px dashed var(--border-color);
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+        .preset-controls { display: flex; gap: 8px; margin-top: 8px; }
+        .preset-select { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border-color); background-color: var(--bg-container); color: var(--text-main); font-size: 13px; }
+        .btn-preset-save { background-color: #2a9d8f; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .btn-preset-del { background-color: #e63946; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+
         .row { display: flex; gap: 12px; margin-bottom: 12px; width: 100%; }
         .input-group { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-        .input-group label { font-size: 12px; font-weight: 600; color: #7c6350; margin-bottom: 6px; }
-        .input-group input, .input-group select { padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; font-size: 14px; outline: none; background-color: #faf9f6; color: #4a3728; }
-        .input-group input[readonly] { background-color: #f0ede6; color: #7c6350; }
+        .input-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+        .input-group input, .input-group select { padding: 12px; border: 1.5px solid var(--border-color); border-radius: 12px; font-size: 14px; outline: none; background-color: var(--bg-input); color: var(--text-main); }
+        .input-group input[readonly] { background-color: var(--bg-readonly); color: var(--text-muted); }
         
         .pouring-header { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 12px; }
         .btn-add { background-color: #d4a373; color: white; border: none; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
-        /* Header Label untuk Waktu dan Gram */
         .pouring-labels { display: flex; gap: 8px; padding: 0 8px; margin-bottom: 6px; }
-        .label-col-badge { width: 80px; } /* Menyelaraskan dengan lebar badge "Bloom" / "Pour" */
-        .label-col-input { flex: 1; font-size: 11px; font-weight: 700; color: #7c6350; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
-        .label-col-btn { width: 32px; } /* Menyelaraskan dengan tombol hapus (X) */
+        .label-col-badge { width: 80px; }
+        .label-col-input { flex: 1; font-size: 11px; font-weight: 700; color: var(--text-muted); text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .label-col-btn { width: 32px; }
 
-        /* Baris Interval */
-        .pouring-row { display: flex; align-items: center; gap: 8px; background-color: #faf9f6; border: 1.5px solid #e6dfd5; padding: 8px; border-radius: 12px; margin-bottom: 8px; }
-        .status-badge { font-size: 11px; font-weight: bold; width: 80px; color: #4a3728; background-color: #eaddca; padding: 8px 5px; border-radius: 8px; text-align: center; }
-        .pouring-row input { flex: 1; min-width: 0; padding: 8px; border: 1.5px solid #e6dfd5; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600; color: #4a3728; }
+        .pouring-row { display: flex; align-items: center; gap: 8px; background-color: var(--bg-input); border: 1.5px solid var(--border-color); padding: 8px; border-radius: 12px; margin-bottom: 8px; }
+        .status-badge { font-size: 11px; font-weight: bold; width: 80px; color: var(--text-main); background-color: var(--bg-badge); padding: 8px 5px; border-radius: 8px; text-align: center; }
+        .pouring-row input { flex: 1; min-width: 0; padding: 8px; border: 1.5px solid var(--border-color); border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-main); background-color: var(--bg-container); }
         .pouring-row input:focus { border-color: #d4a373; outline: none; }
         .btn-delete { background-color: #e63946; color: white; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* Timer Box */
-        .timer-box { background-color: #4a3728; color: white; padding: 28px 20px; border-radius: 20px; text-align: center; margin-top: 24px; margin-bottom: 24px; }
-        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 52px; font-weight: 700; }
+        /* --- TIMER --- */
+        .timer-box { 
+            background-color: #4a3728; color: white; padding: 28px 20px; border-radius: 20px; 
+            text-align: center; margin-top: 24px; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .progress-ring-container { position: relative; width: 160px; height: 160px; margin-bottom: 16px; display: flex; justify-content: center; align-items: center; }
+        .progress-ring-svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); width: 100%; height: 100%; }
+        .progress-ring-circle-bg { fill: transparent; stroke: rgba(255, 255, 255, 0.1); stroke-width: 8; }
+        .progress-ring-circle { fill: transparent; stroke: #d4a373; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.1s linear; }
+
+        .timer-display { font-family: 'Roboto Mono', monospace; font-size: 34px; font-weight: 700; z-index: 2; }
         .status-display { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; color: #d4a373; margin-bottom: 12px; text-transform: uppercase; }
         .target-display { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
         .next-pour-display { font-size: 13px; color: #ffb703; font-weight: 600; margin-bottom: 24px; }
-        .timer-controls { display: flex; gap: 12px; justify-content: center; }
-        .btn-control { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; max-width: 130px; }
+        .timer-controls { display: flex; gap: 12px; justify-content: center; width: 100%; max-width: 280px; }
+        .btn-control { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; }
         .btn-start { background-color: #2a9d8f; color: white; }
         .btn-reset { background-color: #e63946; color: white; }
 
-        /* Taste Notes & Input */
+        /* --- TASTE NOTES --- */
         .taste-notes-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .taste-row { display: flex; align-items: center; gap: 10px; }
-        .taste-label { font-size: 13px; font-weight: 600; color: #7c6350; width: 85px; }
-        .taste-input { flex: 1; padding: 10px; border: 1.5px solid #e6dfd5; border-radius: 10px; font-size: 13px; background-color: #faf9f6; color: #4a3728; font-style: normal; outline: none; }
-        .taste-input:focus { border-color: #d4a373; }
-        .notes-area { width: 100%; height: 95px; padding: 12px; border: 1.5px solid #e6dfd5; border-radius: 12px; background-color: #faf9f6; font-size: 13.5px; margin-top: 12px; color: #4a3728; font-style: normal; outline: none; line-height: 1.4; }
-        .notes-area:focus { border-color: #d4a373; }
+        .taste-label { font-size: 13px; font-weight: 600; color: var(--text-muted); width: 85px; }
+        .taste-input { flex: 1; padding: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13px; background-color: var(--bg-input); color: var(--text-main); outline: none; }
+        .notes-area { width: 100%; height: 95px; padding: 12px; border: 1.5px solid var(--border-color); border-radius: 12px; background-color: var(--bg-input); font-size: 13.5px; margin-top: 12px; color: var(--text-main); outline: none; line-height: 1.4; }
 
-        /* Kustomisasi Placeholder Miring (Italic) */
-        .taste-input::placeholder, .notes-area::placeholder {
-            font-style: italic;
-            color: #a89f91;
-            opacity: 0.8;
-        }
-
-        /* PERBAIKAN: Kode CSS khusus untuk Tombol Save History */
-        .submit-container {
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background-color: #4a3728; /* Menyamakan tema warna cokelat aplikasi */
-            color: white;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            font-family: 'Montserrat', sans-serif;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(74, 55, 40, 0.08);
-            transition: background 0.2s ease;
-        }
-
-        .btn-submit:active {
-            background-color: #36271c;
-        }
-
-        .status-msg {
-            margin-top: 8px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 600;
-        }
+        .submit-container { width: 100%; margin-top: 20px; display: flex; flex-direction: column; }
+        .btn-submit { width: 100%; background-color: #4a3728; color: white; padding: 14px; font-size: 15px; font-weight: bold; font-family: 'Montserrat', sans-serif; border: none; border-radius: 12px; cursor: pointer; }
+        body.dark-mode .btn-submit { background-color: #eaddca; color: #4a3728; }
+        .status-msg { margin-top: 8px; text-align: center; font-size: 13px; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="theme-switch-wrapper">
+        <span class="theme-switch-label">DARK MODE</span>
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" onchange="toggleDarkMode()" />
+            <div class="slider round"></div>
+        </label>
+    </div>
+
     <div class="app-title">BREWING TIMER TOOLS</div>
+
+    <!-- PANEL MANAGEMENT PRESET (MAX 5) - TERKUNCI DI LOCAL STORAGE -->
+    <div class="preset-box">
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Preset Resep (Max 5)</label>
+        <div class="preset-controls">
+            <select class="preset-select" id="presetSelect" onchange="muatPresetIni()">
+                <option value="">-- Pilih / Muat Preset --</option>
+            </select>
+            <button class="btn-preset-save" onclick="simpanPresetBaru()">Simpan</button>
+            <button class="btn-preset-del" onclick="hapusPresetTerpilih()">Hapus</button>
+        </div>
+    </div>
+
     <div class="row"><div class="input-group"><label>Kopi (g)</label><input type="number" id="kopi" value="15" oninput="hitungTotalAir()"></div><div class="input-group"><label>Ratio (1:x)</label><input type="number" id="ratio" value="15" oninput="hitungTotalAir()"></div></div>
     <div class="row"><div class="input-group"><label>Total Air (g)</label><input type="number" id="totalAir" value="225" readonly></div><div class="input-group"><label>Suhu (°C)</label><input type="number" id="suhu" value="92"></div></div>
     <div class="row"><div class="input-group"><label>Grind</label><select id="grindSize"><option>Medium</option><option>Fine</option><option>Medium-Fine</option><option>Medium-Coarse</option><option>Coarse</option></select></div><div class="input-group"><label>Roast</label><select id="roastBeans"><option>Medium</option><option>Light</option><option>Medium-Light</option><option>Medium-Dark</option><option>Dark</option></select></div></div>
 
-    <!-- Header Interval Seduh -->
-    <div class="pouring-header"><div class="section-title">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
+    <div class="pouring-header"><div class="section-title" style="margin:0;">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
     
-    <!-- Penunjuk Label Kolom Atas -->
     <div class="pouring-labels">
         <span class="label-col-badge"></span>
         <span class="label-col-input">Air (g)</span>
@@ -124,44 +238,33 @@
         <div class="pouring-row"><span class="status-badge" data-type="Pour 2">Pour 2</span><input type="number" class="water-input" value="100"><input type="number" class="time-input" value="45"><button class="btn-delete" onclick="hapusBaris(this)">✕</button></div>
     </div>
 
-    <!-- Timer Control Box -->
     <div class="timer-box">
-        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="progress-ring-container">
+            <svg class="progress-ring-svg">
+                <circle class="progress-ring-circle-bg" cx="80" cy="80" r="70"></circle>
+                <circle class="progress-ring-circle" id="progressRing" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+        </div>
+        
         <div class="status-display" id="statusDisplay">READY</div>
         <div class="target-display" id="targetDisplay">Target Air: 0g</div>
         <div class="next-pour-display" id="nextPourDisplay">Pouring selanjutnya: --</div>
         <div class="timer-controls"><button class="btn-control btn-start" id="btnStart" onclick="toggleTimer()">START</button><button class="btn-control btn-reset" onclick="resetTimer()">RESET</button></div>
     </div>
 
-    <!-- Taste Notes Terstruktur dengan Placeholder Miring -->
-    <div class="section-title">Taste Notes</div>
+    <div class="section-title" style="margin-top:0;">Taste Notes</div>
     <div class="taste-notes-container">
-        <div class="taste-row">
-            <span class="taste-label">Flavor</span>
-            <input type="text" class="taste-input" id="flavor" placeholder="Fruity red berry dan fruit jam">
-        </div>
-        <div class="taste-row">
-            <span class="taste-label">Acidity</span>
-            <input type="text" class="taste-input" id="acidity" placeholder="Juicy seperti apel merah">
-        </div>
-        <div class="taste-row">
-            <span class="taste-label">Sweetness</span>
-            <input type="text" class="taste-input" id="sweetness" placeholder="Tinggi menyerupai gula aren">
-        </div>
-        <div class="taste-row">
-            <span class="taste-label">Body</span>
-            <input type="text" class="taste-input" id="body" placeholder="Medium round">
-        </div>
-        <div class="taste-row">
-            <span class="taste-label">Aftertaste</span>
-            <input type="text" class="taste-input" id="aftertaste" placeholder="Fruity panjang">
-        </div>
+        <div class="taste-row"><span class="taste-label">Flavor</span><input type="text" class="taste-input" id="flavor" oninput="perbaruiRingkasanRasa()" placeholder="Fruity red berry"></div>
+        <div class="taste-row"><span class="taste-label">Acidity</span><input type="text" class="taste-input" id="acidity" oninput="perbaruiRingkasanRasa()" placeholder="Juicy apel"></div>
+        <div class="taste-row"><span class="taste-label">Sweetness</span><input type="text" class="taste-input" id="sweetness" oninput="perbaruiRingkasanRasa()" placeholder="Gula aren"></div>
+        <div class="taste-row"><span class="taste-label">Body</span><input type="text" class="taste-input" id="body" oninput="perbaruiRingkasanRasa()" placeholder="Medium round"></div>
+        <div class="taste-row"><span class="taste-label">Aftertaste</span><input type="text" class="taste-input" id="aftertaste" oninput="perbaruiRingkasanRasa()" placeholder="Panjang"></div>
     </div>
     
-    <!-- Kesimpulan dengan Placeholder Gabungan Terstruktur -->
-    <textarea class="notes-area" id="tasteSummary" placeholder="Fruity red berry dan fruit jam. Sweetness tinggi menyerupai gula aren, acidity juicy seperti apel merah, body medium round, dengan aftertaste fruity panjang."></textarea>
+    <textarea class="notes-area" id="tasteSummary" placeholder="Ringkasan rasa otomatis..."></textarea>
 
-    <!-- PERBAIKAN: Posisinya dimasukkan ke dalam <div class="container"> di bawah textarea -->
+    <!-- SINKRONISASI KEMBALI KE GOOGLE SHEETS -->
     <div class="submit-container">
         <button class="btn-submit" id="btnSubmit" onclick="kirimDataKeSheets()">💾 SAVE HISTORY</button>
         <div class="status-msg" id="statusMsg"></div>
@@ -169,91 +272,117 @@
 </div>
 
 <script>
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxXwH9qiEbayI47M9MT7ibdfzypDCGqGKomUBnPPNESPF31evl7MSL3Y7dG_j2bDers/exec";
-    let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
-
-    function hitungTotalAir() { const k = parseFloat(document.getElementById('kopi').value)||0; const r = parseFloat(document.getElementById('ratio').value)||0; document.getElementById('totalAir').value = k*r; }
+    // URL Web App Google Apps Script Anda yang aktif
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyB5p48lpGd8o80RSZXjGFV9iKOI35I7Cx6ftZHYMxLSTCPHyK3YVub9HNP9MKnZf76/exec";
     
-    function urutkanUlangMekanikBaris() {
-        const rows = document.querySelectorAll('.pouring-row');
-        rows.forEach((row, index) => {
-            const badge = row.querySelector('.status-badge');
-            if (index === 0) { badge.innerText = 'Bloom'; badge.setAttribute('data-type', 'Bloom'); }
-            else { badge.innerText = `Pour ${index + 1}`; badge.setAttribute('data-type', `Pour ${index + 1}`); }
+    let timerInterval = null, totalDetikBerjalan = 0, isRunning = false, daftarLangkah = [], indeksLangkahSekarang = 0, detikDiLangkahSekarang = 0, airKumulatif = 0;
+    let audioCtx = null;
+
+    const circle = document.getElementById('progressRing');
+    const radius = circle.r.baseVal.value;
+    const kelilingRing = radius * 2 * Math.PI;
+    circle.style.strokeDasharray = `${kelilingRing} ${kelilingRing}`;
+    circle.style.strokeDashoffset = kelilingRing;
+
+    function setProgress(persen) {
+        circle.style.strokeDashoffset = kelilingRing - (persen / 100) * kelilingRing;
+    }
+
+    // --- MEKANISME PRESET (100% LOCAL STORAGE - MAX 5) ---
+    let daftarPreset = JSON.parse(localStorage.getItem('brewPresets')) || {};
+
+    function renderDropdownPreset() {
+        const select = document.getElementById('presetSelect');
+        select.innerHTML = '<option value="">-- Pilih / Muat Preset --</option>';
+        Object.keys(daftarPreset).forEach(nama => {
+            const opt = document.createElement('option');
+            opt.value = nama; opt.innerText = nama;
+            select.appendChild(opt);
         });
     }
 
-    function tambahBaris() {
-        if (isRunning) return;
-        const container = document.getElementById('pouringContainer');
-        if (container.children.length >= 10) return;
-        const newRow = document.createElement('div');
-        newRow.className = 'pouring-row';
-        newRow.innerHTML = `<span class="status-badge" data-type="Pour">Pour</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="30"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
-        container.appendChild(newRow);
-        urutkanUlangMekanikBaris();
-    }
+    function simpanPresetBaru() {
+        const keys = Object.keys(daftarPreset);
+        let nama = prompt("Masukkan nama preset resep baru:");
+        if (!nama) return;
+        nama = nama.trim();
+        if (nama === "") return;
 
-    function hapusBaris(btn) { if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } }
-
-    function susunRencanaSeduh() {
-        daftarLangkah = []; airKumulatif = 0;
-        document.querySelectorAll('.pouring-row').forEach((row, idx) => {
-            const air = parseFloat(row.querySelector('.water-input').value)||0;
-            const durasi = parseInt(row.querySelector('.time-input').value)||0;
-            airKumulatif += air;
-            daftarLangkah.push({ tipe: row.querySelector('.status-badge').innerText, durasi, targetAir: airKumulatif });
-        });
-    }
-
-    function toggleTimer() {
-        if (!isRunning) {
-            if (totalDetikBerjalan === 0) { susunRencanaSeduh(); if(daftarLangkah.length===0) return; }
-            isRunning = true; document.getElementById('btnStart').innerText = 'PAUSE'; document.getElementById('btnStart').style.backgroundColor = '#f4a261';
-            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=true);
-            timerInterval = setInterval(jalankanTimer, 1000);
-        } else {
-            isRunning = false; document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
-            clearInterval(timerInterval);
-        }
-    }
-
-    function jalankanTimer() {
-        if (indeksLangkahSekarang >= daftarLangkah.length) {
-            clearInterval(timerInterval); isRunning = false;
-            document.getElementById('statusDisplay').innerText = 'SELESAI';
-            document.getElementById('btnStart').innerText = 'START';
-            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
+        // Validasi Limitasi Ketat: Maksimal 5 Preset
+        if (keys.length >= 5 && !daftarPreset[nama]) {
+            alert(`⚠️ Batas Kuota Tercapai! Anda sudah memiliki 5 resep.\nSilakan pilih resep yang ada di dropdown lalu klik 'Hapus' terlebih dahulu.`);
             return;
         }
-        totalDetikBerjalan++; detikDiLangkahSekarang++;
-        const langkah = daftarLangkah[indeksLangkahSekarang];
-        if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; }
-        
-        document.getElementById('timerDisplay').innerText = `${Math.floor(totalDetikBerjalan/60).toString().padStart(2,'0')}:${(totalDetikBerjalan%60).toString().padStart(2,'0')}`;
-        document.getElementById('statusDisplay').innerText = langkah.tipe;
-        document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
-        document.getElementById('nextPourDisplay').innerText = (indeksLangkahSekarang+1 < daftarLangkah.length) ? `Next: ${daftarLangkah[indeksLangkahSekarang+1].tipe}` : "Selesai";
+
+        let intervalData = [];
+        document.querySelectorAll('.pouring-row').forEach(row => {
+            intervalData.push({
+                air: row.querySelector('.water-input').value,
+                waktu: row.querySelector('.time-input').value
+            });
+        });
+
+        daftarPreset[nama] = {
+            kopi: document.getElementById('kopi').value,
+            ratio: document.getElementById('ratio').value,
+            suhu: document.getElementById('suhu').value,
+            grindSize: document.getElementById('grindSize').value,
+            roastBeans: document.getElementById('roastBeans').value,
+            intervals: intervalData
+        };
+
+        localStorage.setItem('brewPresets', JSON.stringify(daftarPreset));
+        renderDropdownPreset();
+        document.getElementById('presetSelect').value = nama;
+        alert(`✓ Preset "${nama}" berhasil disimpan.`);
     }
 
-    function resetTimer() {
-        clearInterval(timerInterval); isRunning = false; totalDetikBerjalan = 0; indeksLangkahSekarang = 0; detikDiLangkahSekarang = 0;
-        document.getElementById('timerDisplay').innerText = '00:00'; document.getElementById('statusDisplay').innerText = 'READY';
-        document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
-        document.getElementById('btnStart').innerText = 'START';
+    function muatPresetIni() {
+        const nama = document.getElementById('presetSelect').value;
+        if (!nama || !daftarPreset[nama]) return;
+
+        const data = daftarPreset[nama];
+        document.getElementById('kopi').value = data.kopi;
+        document.getElementById('ratio').value = data.ratio;
+        document.getElementById('suhu').value = data.suhu;
+        document.getElementById('grindSize').value = data.grindSize;
+        document.getElementById('roastBeans').value = data.roastBeans;
+        hitungTotalAir();
+
+        const container = document.getElementById('pouringContainer');
+        container.innerHTML = "";
+        data.intervals.forEach((item, idx) => {
+            const newRow = document.createElement('div');
+            newRow.className = 'pouring-row';
+            const tipe = idx === 0 ? 'Bloom' : `Pour ${idx + 1}`;
+            newRow.innerHTML = `<span class="status-badge" data-type="${tipe}">${tipe}</span><input type="number" class="water-input" value="${item.air}"><input type="number" class="time-input" value="${item.waktu}"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
+            container.appendChild(newRow);
+        });
     }
 
-    // Fungsi Pengiriman Data
+    function hapusPresetTerpilih() {
+        const select = document.getElementById('presetSelect');
+        const nama = select.value;
+        if (!nama) { alert("Pilih preset yang ingin dihapus dari dropdown terlebih dahulu."); return; }
+
+        if (confirm(`Apakah Anda yakin ingin menghapus preset "${nama}"?`)) {
+            delete daftarPreset[nama];
+            localStorage.setItem('brewPresets', JSON.stringify(daftarPreset));
+            renderDropdownPreset();
+            resetTimer();
+        }
+    }
+
+    // --- TRANSMISI DATA ONLINE KE GOOGLE SHEETS ---
     function kirimDataKeSheets() {
-        const btn = document.getElementById('btnSubmit');
-        const msg = document.getElementById('statusMsg');
-        
-        btn.disabled = true;
-        btn.innerText = "⏳ SAVING...";
-        msg.style.color = "#7c6350";
-        msg.innerText = "Mengirim data ke Google Sheets...";
+        const btn = document.getElementById('btnSubmit'); const msg = document.getElementById('statusMsg');
+        btn.disabled = true; btn.innerText = "⏳ SAVING TO CLOUD...";
+        msg.style.color = "var(--text-muted)"; msg.innerText = "Mengirim data ke Google Sheets...";
+
+        const currentPreset = document.getElementById('presetSelect').value || "Manual";
 
         const payload = {
+            presetNama: currentPreset, // Info resep yang digunakan ikut terkirim ke log cloud
             kopi: document.getElementById('kopi').value,
             ratio: document.getElementById('ratio').value,
             totalAir: document.getElementById('totalAir').value,
@@ -275,18 +404,138 @@
             body: JSON.stringify(payload)
         })
         .then(() => {
-            btn.disabled = false;
-            btn.innerText = "💾 SAVE HISTORY";
-            msg.style.color = "#2a9d8f";
-            msg.innerText = "✓ Data berhasil disimpan ke Google Sheets!";
+            btn.disabled = false; btn.innerText = "💾 SAVE HISTORY";
+            msg.style.color = "#2a9d8f"; msg.innerText = "✓ Data berhasil disimpan ke Google Sheets!";
         })
         .catch(err => {
-            btn.disabled = false;
-            btn.innerText = "💾 SAVE HISTORY";
-            msg.style.color = "#e63946";
-            msg.innerText = "✗ Gagal menyimpan data.";
+            btn.disabled = false; btn.innerText = "💾 SAVE HISTORY";
+            msg.style.color = "#e63946"; msg.innerText = "✗ Gagal menyimpan data.";
             console.error(err);
         });
+    }
+
+    // --- KONTROL AUTOMATING TEXT & UTILITY ---
+    function perbaruiRingkasanRasa() {
+        const flavor = document.getElementById('flavor').value.trim();
+        const acidity = document.getElementById('acidity').value.trim();
+        const sweetness = document.getElementById('sweetness').value.trim();
+        const body = document.getElementById('body').value.trim();
+        const aftertaste = document.getElementById('aftertaste').value.trim();
+        let kalimat = [];
+        if (flavor) kalimat.push(`Flavor dominan yang terasa adalah ${flavor}`);
+        if (sweetness) kalimat.push(`sweetness ${sweetness}`);
+        if (acidity) kalimat.push(`acidity terasa ${acidity}`);
+        if (body) kalimat.push(`body memiliki impresi ${body}`);
+        if (aftertaste) kalimat.push(`diakhiri dengan aftertaste ${aftertaste}`);
+
+        if (kalimat.length > 0) {
+            let hasilTeks = kalimat.join(', ').replace(/,([^,]*)$/, ' serta$1') + '.';
+            document.getElementById('tasteSummary').value = hasilTeks.charAt(0).toUpperCase() + hasilTeks.slice(1);
+        } else { document.getElementById('tasteSummary').value = ''; }
+    }
+
+    function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
+    function bunyikanBeep(frekuensi, durasi) {
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(); const gainNode = audioCtx.createGain();
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+        osc.type = 'sine'; osc.frequency.value = frekuensi;
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + durasi);
+        osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + durasi);
+    }
+
+    function toggleDarkMode() {
+        const body = document.body; const checkbox = document.getElementById('checkbox');
+        if (checkbox.checked) { body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark'); } 
+        else { body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light'); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
+        const checkbox = document.getElementById('checkbox');
+        if (savedTheme === 'dark') { document.body.classList.add('dark-mode'); checkbox.checked = true; }
+        renderDropdownPreset();
+        setProgress(0);
+    });
+
+    function hitungTotalAir() { document.getElementById('totalAir').value = (parseFloat(document.getElementById('kopi').value)||0)*(parseFloat(document.getElementById('ratio').value)||0); }
+    function urutkanUlangMekanikBaris() {
+        document.querySelectorAll('.pouring-row').forEach((row, index) => {
+            const badge = row.querySelector('.status-badge');
+            const teks = index === 0 ? 'Bloom' : `Pour ${index + 1}`;
+            badge.innerText = teks; badge.setAttribute('data-type', teks);
+        });
+    }
+    function tambahBaris() {
+        if (isRunning) return;
+        const container = document.getElementById('pouringContainer');
+        if (container.children.length >= 10) return;
+        const newRow = document.createElement('div');
+        newRow.className = 'pouring-row';
+        newRow.innerHTML = `<span class="status-badge" data-type="Pour">Pour</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="30"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
+        container.appendChild(newRow); urutkanUlangMekanikBaris();
+    }
+    function hapusBaris(btn) { if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } }
+
+    function susunRencanaSeduh() {
+        daftarLangkah = []; airKumulatif = 0;
+        document.querySelectorAll('.pouring-row').forEach((row) => {
+            const air = parseFloat(row.querySelector('.water-input').value)||0;
+            const durasi = parseInt(row.querySelector('.time-input').value)||0;
+            airKumulatif += air;
+            daftarLangkah.push({ tipe: row.querySelector('.status-badge').innerText, durasi, targetAir: airKumulatif });
+        });
+    }
+
+    function toggleTimer() {
+        initAudio();
+        if (!isRunning) {
+            if (totalDetikBerjalan === 0) { susunRencanaSeduh(); if(daftarLangkah.length===0) return; }
+            isRunning = true; document.getElementById('btnStart').innerText = 'PAUSE'; document.getElementById('btnStart').style.backgroundColor = '#f4a261';
+            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=true);
+            timerInterval = setInterval(jalankanTimer, 1000);
+        } else {
+            isRunning = false; document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
+            clearInterval(timerInterval);
+        }
+    }
+
+    function jalankanTimer() {
+        if (indeksLangkahSekarang >= daftarLangkah.length) {
+            clearInterval(timerInterval); isRunning = false;
+            document.getElementById('statusDisplay').innerText = 'SELESAI';
+            document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
+            document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
+            setProgress(100); document.getElementById('nextPourDisplay').innerText = "Selesai";
+            bunyikanBeep(880, 0.8); return;
+        }
+        totalDetikBerjalan++; detikDiLangkahSekarang++;
+        const langkah = daftarLangkah[indeksLangkahSekarang];
+        setProgress((detikDiLangkahSekarang / langkah.durasi) * 100);
+        
+        document.getElementById('timerDisplay').innerText = `${Math.floor(totalDetikBerjalan/60).toString().padStart(2,'0')}:${(totalDetikBerjalan%60).toString().padStart(2,'0')}`;
+        document.getElementById('statusDisplay').innerText = langkah.tipe;
+        document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
+        
+        if (indeksLangkahSekarang + 1 < daftarLangkah.length) {
+            const n = daftarLangkah[indeksLangkahSekarang + 1];
+            document.getElementById('nextPourDisplay').innerText = `Next: ${n.tipe} (${n.durasi}s)`;
+        } else { document.getElementById('nextPourDisplay').innerText = "Tuangan terakhir"; }
+
+        const sisa = langkah.durasi - detikDiLangkahSekarang;
+        if (sisa > 0 && sisa <= 3) bunyikanBeep(440, 0.1);
+
+        if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; if (indeksLangkahSekarang < daftarLangkah.length) bunyikanBeep(587.33, 0.4); }
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval); isRunning = false; totalDetikBerjalan = 0; indeksLangkahSekarang = 0; detikDiLangkahSekarang = 0;
+        document.getElementById('timerDisplay').innerText = '00:00'; document.getElementById('statusDisplay').innerText = 'READY';
+        document.querySelectorAll('.water-input, .time-input').forEach(i=>i.disabled=false);
+        document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = '#2a9d8f';
+        document.getElementById('nextPourDisplay').innerText = "Pouring selanjutnya: --"; setProgress(0); 
     }
 </script>
 </body>
