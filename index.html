@@ -10,11 +10,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="BrewTimer">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233475.png">
+    <link rel="apple-touch-icon" href="icon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
     <style>
         /* --- VARIABLE WARNA --- */
@@ -76,31 +76,45 @@
             max-width: 450px; 
         }
 
+        /* --- BOX JUDUL RATA TENGAH & KAPITAL --- */
         .app-title { 
             font-family: 'Montserrat', sans-serif; 
             font-weight: 700; 
-            color: var(--text-main); 
-            text-align: left; 
-            margin-bottom: 22px; 
-            font-size: 20px; 
-            padding-right: 110px; 
-        }
-
-        .section-title { 
-            font-family: 'Montserrat', sans-serif; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            margin: 20px 0 10px 0; 
+            color: #4a3728; 
+            text-align: center; 
+            margin-bottom: 24px; 
             font-size: 16px; 
-        }
-
-        .theme-switch-wrapper {
-            position: absolute;
-            top: 24px;
-            right: 24px;
+            letter-spacing: 0.8px;
+            line-height: 1.3;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            
+            background: linear-gradient(135deg, #eaddca 0%, #e6dfd5 100%);
+            padding: 14px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(74, 55, 40, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        body.dark-mode .app-title {
+            background: linear-gradient(135deg, #2e2924 0%, #1a1715 100%);
+            color: #f4f1ea;
+            border-color: #3e3227;
+            box-shadow: none;
+        }
+
+        /* --- RE-POSISI SWITCHER DARK MODE --- */
+        .theme-switch-wrapper {
+            position: relative;
+            top: 0;
+            right: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
             z-index: 10;
         }
 
@@ -137,7 +151,7 @@
         input:checked + .slider { background-color: #588157; }
         input:checked + .slider:before { transform: translateX(18px); }
         
-        /* --- PRESET MANAGER --- */
+        /* --- OPTIMALISASI PRESET MANAGER --- */
         .preset-box {
             background-color: var(--bg-input);
             border: 1.5px dashed var(--border-color);
@@ -145,10 +159,49 @@
             border-radius: 14px;
             margin-bottom: 16px;
         }
-        .preset-controls { display: flex; gap: 8px; margin-top: 8px; }
-        .preset-select { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border-color); background-color: var(--bg-container); color: var(--text-main); font-size: 13px; }
-        .btn-preset-save { background-color: #2a9d8f; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .btn-preset-del { background-color: #e63946; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .preset-controls { 
+            display: flex; 
+            gap: 6px; 
+            margin-top: 8px; 
+            align-items: center;
+            width: 100%;
+        }
+        .preset-select { 
+            flex: 2; 
+            padding: 8px 6px; 
+            border-radius: 8px; 
+            border: 1.5px solid var(--border-color); 
+            background-color: var(--bg-container); 
+            color: var(--text-main); 
+            font-size: 12px;
+            min-width: 0;
+        }
+        .btn-preset-save { 
+            background-color: #2a9d8f; 
+            color: white; 
+            border: none; 
+            padding: 8px 8px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            cursor: pointer;
+            flex: 1;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .btn-preset-del { 
+            background-color: #e63946; 
+            color: white; 
+            border: none; 
+            padding: 8px 8px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            cursor: pointer;
+            flex: 1;
+            white-space: nowrap;
+            text-align: center;
+        }
 
         .row { display: flex; gap: 12px; margin-bottom: 12px; width: 100%; }
         .input-group { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -156,6 +209,14 @@
         .input-group input, .input-group select { padding: 12px; border: 1.5px solid var(--border-color); border-radius: 12px; font-size: 14px; outline: none; background-color: var(--bg-input); color: var(--text-main); }
         .input-group input[readonly] { background-color: var(--bg-readonly); color: var(--text-muted); }
         
+        /* --- PERTEBAL SUB JUDUL (BOLD) --- */
+        .section-title-bold {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
         .pouring-header { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 12px; }
         .btn-add { background-color: #d4a373; color: white; border: none; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: bold; }
 
@@ -206,6 +267,7 @@
 <body>
 
 <div class="container">
+    <!-- 1. Tombol Switch Mandiri -->
     <div class="theme-switch-wrapper">
         <span class="theme-switch-label">DARK MODE</span>
         <label class="theme-switch" for="checkbox">
@@ -214,9 +276,10 @@
         </label>
     </div>
 
-    <div class="app-title">BREWING TIMER TOOLS</div>
+    <!-- 2. Box Judul Rata Tengah -->
+    <div class="app-title"><span>BREWING TIMER TOOLS</span></div>
 
-    <!-- PANEL MANAGEMENT PRESET (MAX 5) - TERKUNCI DI LOCAL STORAGE -->
+    <!-- 3. Panel Preset Manager -->
     <div class="preset-box">
         <label style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Preset Resep (Max 5)</label>
         <div class="preset-controls">
@@ -232,7 +295,8 @@
     <div class="row"><div class="input-group"><label>Total Air (g)</label><input type="number" id="totalAir" value="225" readonly></div><div class="input-group"><label>Suhu (°C)</label><input type="number" id="suhu" value="92"></div></div>
     <div class="row"><div class="input-group"><label>Grind</label><select id="grindSize"><option>Medium</option><option>Fine</option><option>Medium-Fine</option><option>Medium-Coarse</option><option>Coarse</option></select></div><div class="input-group"><label>Roast</label><select id="roastBeans"><option>Medium</option><option>Light</option><option>Medium-Light</option><option>Medium-Dark</option><option>Dark</option></select></div></div>
 
-    <div class="pouring-header"><div class="section-title" style="margin:0;">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
+    <!-- Sub Judul Dipertebal -->
+    <div class="pouring-header"><div class="section-title-bold">Interval Pouring</div><button class="btn-add" onclick="tambahBaris()">+ Tambah</button></div>
     
     <div class="pouring-labels">
         <span class="label-col-badge"></span>
@@ -261,7 +325,8 @@
         <div class="timer-controls"><button class="btn-control btn-start" id="btnStart" onclick="toggleTimer()">START</button><button class="btn-control btn-reset" onclick="resetTimer()">RESET</button></div>
     </div>
 
-    <div class="section-title" style="margin-top:0;">Taste Notes</div>
+    <!-- Sub Judul Dipertebal -->
+    <div class="section-title-bold" style="margin-bottom: 8px;">Taste Notes</div>
     <div class="taste-notes-container">
         <div class="taste-row"><span class="taste-label">Flavor</span><input type="text" class="taste-input" id="flavor" oninput="perbaruiRingkasanRasa()" placeholder="Fruity red berry"></div>
         <div class="taste-row"><span class="taste-label">Acidity</span><input type="text" class="taste-input" id="acidity" oninput="perbaruiRingkasanRasa()" placeholder="Juicy apel"></div>
@@ -280,10 +345,9 @@
 </div>
 
 <script>
-    // URL Web App Google Apps Script Anda yang aktif
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyB5p48lpGd8o80RSZXjGFV9iKOI35I7Cx6ftZHYMxLSTCPHyK3YVub9HNP9MKnZf76/exec";
     
-    // --- INTEGRASI STRUKTUR DATABASE LOKAL (IndexedDB) ---
+    // --- STORAGE INDEXEDDB ---
     const DB_NAME = 'brew-offline-db';
     const STORE_NAME = 'outbox';
 
@@ -312,12 +376,11 @@
         });
     }
 
-    // --- STRUKTUR REGISTRASI SERVICE WORKER OTOMATIS ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('Service Worker terdaftar:', reg.scope))
-                .catch(err => console.error('Gagal daftarkan Service Worker:', err));
+                .then(reg => console.log('Service Worker aktif:', reg.scope))
+                .catch(err => console.error('Gagal daftarkan SW:', err));
         });
     }
 
@@ -334,7 +397,6 @@
         circle.style.strokeDashoffset = kelilingRing - (persen / 100) * kelilingRing;
     }
 
-    // --- MEKANISME PRESET (100% LOCAL STORAGE - MAX 5) ---
     let daftarPreset = JSON.parse(localStorage.getItem('brewPresets')) || {};
 
     function renderDropdownPreset() {
@@ -355,7 +417,7 @@
         if (nama === "") return;
 
         if (keys.length >= 5 && !daftarPreset[nama]) {
-            alert(`⚠️ Batas Kuota Tercapai! Anda sudah memiliki 5 resep.\nSilakan pilih resep yang ada di dropdown lalu klik 'Hapus' terlebih dahulu.`);
+            alert(`⚠️ Batas Kuota Tercapai! Resep maksimal adalah 5 buah.`);
             return;
         }
 
@@ -408,7 +470,7 @@
     function hapusPresetTerpilih() {
         const select = document.getElementById('presetSelect');
         const nama = select.value;
-        if (!nama) { alert("Pilih preset yang ingin dihapus dari dropdown terlebih dahulu."); return; }
+        if (!nama) { alert("Pilih preset dari dropdown terlebih dahulu."); return; }
 
         if (confirm(`Apakah Anda yakin ingin menghapus preset "${nama}"?`)) {
             delete daftarPreset[nama];
@@ -418,11 +480,9 @@
         }
     }
 
-    // --- MODIFIKASI: STRUKTUR TRANSMISI DATA HYBRID (ONLINE / OFFLINE) ---
     async function kirimDataKeSheets() {
         const btn = document.getElementById('btnSubmit'); 
         const msg = document.getElementById('statusMsg');
-        
         const currentPreset = document.getElementById('presetSelect').value || "Manual";
 
         const payload = {
@@ -441,28 +501,23 @@
             tasteSummary: document.getElementById('tasteSummary').value
         };
 
-        // KONDISI LOGIS 1: JIKA TERDETEKSI OFFLINE
         if (!navigator.onLine) {
             try {
                 await simpanKeAntreanLokal(payload);
-                
-                // Mendaftarkan antrean ke Service Worker Background Sync
                 if ('serviceWorker' in navigator && 'SyncManager' in window) {
                     const reg = await navigator.serviceWorker.ready;
                     await reg.sync.register('sync-history');
                 }
-                
                 msg.style.color = "#f4a261"; 
-                msg.innerText = "⏳ Offline: Disimpan di HP. Otomatis terkirim saat internet ada!";
+                msg.innerText = "⏳ Offline: Disimpan di HP. Otomatis terkirim saat internet aktif!";
             } catch (err) {
                 msg.style.color = "#e63946";
-                msg.innerText = "✗ Gagal menyimpan data lokal internal.";
+                msg.innerText = "✗ Gagal menyimpan data lokal.";
                 console.error(err);
             }
             return;
         }
 
-        // KONDISI LOGIS 2: JIKA ONLINE (PROSES BIASA)
         btn.disabled = true; btn.innerText = "⏳ SAVING TO CLOUD...";
         msg.style.color = "var(--text-muted)"; msg.innerText = "Mengirim data ke Google Sheets...";
 
@@ -477,15 +532,12 @@
             msg.style.color = "#2a9d8f"; msg.innerText = "✓ Data berhasil disimpan ke Google Sheets!";
         })
         .catch(async (err) => {
-            // KONDISI FALLBACK: Jika ditengah kirim sinyal putus, amankan ke database lokal
             await simpanKeAntreanLokal(payload);
             btn.disabled = false; btn.innerText = "💾 SAVE HISTORY";
-            msg.style.color = "#f4a261"; msg.innerText = "⏳ Koneksi terganggu. Dialihkan ke antrean HP.";
-            console.error(err);
+            msg.style.color = "#f4a261"; msg.innerText = "⏳ Koneksi putus. Dialihkan ke antrean HP.";
         });
     }
 
-    // --- KONTROL AUTOMATING TEXT & UTILITY ---
     function perbaruiRingkasanRasa() {
         const flavor = document.getElementById('flavor').value.trim();
         const acidity = document.getElementById('acidity').value.trim();
