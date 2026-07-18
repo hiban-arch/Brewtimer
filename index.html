@@ -450,44 +450,65 @@
 
     // --- FUNGSIONALITAS INTERAKSI DATABASE CLOUD (USERS) ---
     function eksekusiDaftarCloud() {
-        const user = document.getElementById('regUser').value.trim();
-        const pass = document.getElementById('regPass').value;
-        const passConfirm = document.getElementById('regPassConfirm').value;
-        const statusMsg = document.getElementById('authStatusMsg');
-        const btn = document.getElementById('btnAksiDaftar');
+    const user = document.getElementById('regUser').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const passConfirm = document.getElementById('regPassConfirm').value;
+    const statusMsg = document.getElementById('authStatusMsg');
+    const btn = document.getElementById('btnAksiDaftar');
 
-        if (!user || !pass || !passConfirm) {
-            statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Kolom tidak boleh ada yang kosong!"; return;
+    // 1. Validasi kolom kosong
+    if (!user || !pass || !passConfirm) {
+        statusMsg.style.color = "#e63946"; 
+        statusMsg.innerText = "❌ Kolom tidak boleh ada yang kosong!"; 
+        return;
+    }
+
+    // 2. Validasi minimal 6 karakter untuk Username
+    if (user.length < 6) {
+        statusMsg.style.color = "#e63946"; 
+        statusMsg.innerText = "❌ Username minimal harus 6 karakter!"; 
+        return;
+    }
+
+    // 3. Validasi minimal 6 karakter untuk Password
+    if (pass.length < 6) {
+        statusMsg.style.color = "#e63946"; 
+        statusMsg.innerText = "❌ Password minimal harus 6 karakter!"; 
+        return;
+    }
+
+    // 4. Validasi kecocokan konfirmasi password
+    if (pass !== passConfirm) {
+        statusMsg.style.color = "#e63946"; 
+        statusMsg.innerText = "❌ Konfirmasi password tidak sesuai!"; 
+        return;
+    }
+
+    btn.disabled = true; btn.innerText = "MEMPROSES...";
+    statusMsg.style.color = "var(--text-muted)"; statusMsg.innerText = "Mendaftarkan akun ke cloud...";
+
+    fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "register", username: user, password: pass })
+    })
+    .then(res => res.json())
+    .then(res => {
+        btn.disabled = false; btn.innerText = "DAFTAR AKUN";
+        if (res.status === "success") {
+            alert("✓ Pendaftaran berhasil! Silakan masuk.");
+            pindahForm('login');
+            document.getElementById('loginUser').value = user;
+            document.getElementById('regUser').value = "";
+            document.getElementById('regPass').value = "";
+            document.getElementById('regPassConfirm').value = "";
+        } else {
+            statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ " + res.message;
         }
-        if (pass !== passConfirm) {
-            statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Konfirmasi password tidak sesuai!"; return;
-        }
-
-        btn.disabled = true; btn.innerText = "MEMPROSES...";
-        statusMsg.style.color = "var(--text-muted)"; statusMsg.innerText = "Mendaftarkan akun ke cloud...";
-
-        fetch(GOOGLE_SHEET_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "register", username: user, password: pass })
-        })
-        .then(res => res.json())
-        .then(res => {
-            btn.disabled = false; btn.innerText = "DAFTAR AKUN";
-            if (res.status === "success") {
-                alert("✓ Pendaftaran berhasil! Silakan masuk.");
-                pindahForm('login');
-                document.getElementById('loginUser').value = user;
-                document.getElementById('regUser').value = "";
-                document.getElementById('regPass').value = "";
-                document.getElementById('regPassConfirm').value = "";
-            } else {
-                statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ " + res.message;
-            }
-        })
-        .catch(err => {
-            btn.disabled = false; btn.innerText = "DAFTAR AKUN";
-            statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Koneksi gagal atau diblokir CORS browser.";
-        });
+    })
+    .catch(err => {
+        btn.disabled = false; btn.innerText = "DAFTAR AKUN";
+        statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Koneksi gagal atau diblokir CORS browser.";
+    });
     }
 
     function eksekusiLoginCloud() {
