@@ -1,10 +1,10 @@
 // Mengimpor pustaka idb untuk mempermudah manipulasi IndexedDB di Service Worker
 importScripts('https://cdn.jsdelivr.net/npm/idb@7/build/umd.js');
 
-const CACHE_NAME = 'brewtimer-v2';
+const CACHE_NAME = 'brewtimer-v3'; // Naikkan versi cache agar browser mendeteksi pembaruan
 const ASSETS = [
   'index.html',
-  'manifest.json'
+  'manifest.json',
   'icon1.png'
 ];
 
@@ -23,7 +23,7 @@ const dbPromise = idb.openDB('brew-offline-db', 1, {
 // Tahap Install: Simpan aset utama ke dalam Cache browser
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
   );
 });
 
@@ -32,7 +32,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => Promise.all(
       keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })
-    ))
+    )).then(() => self.clients.claim())
   );
 });
 
@@ -57,12 +57,13 @@ async function kirimUtangDataKeSheets() {
 
   for (const data of semuaUtangData) {
     try {
-      // Kirim ke Google Sheets URL yang tersimpan di dalam objek data
-      await fetch(data.url, {
+      // Menggunakan URL pusat yang sudah didefinisikan secara konsisten
+      // Dan mengirimkan langsung objek data seduhan yang tersimpan
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data.payload)
+        body: JSON.stringify(data) 
       });
       
       // Jika sukses terkirim, hapus dari antrean lokal
@@ -70,7 +71,7 @@ async function kirimUtangDataKeSheets() {
       console.log('✓ Utang data offline berhasil disinkronkan ke Google Sheets!');
     } catch (err) {
       console.error('✗ Gagal sinkronisasi, akan dicoba lagi nanti:', err);
-      throw err; // Lempar eror agar sistem Sync mencoba lagi nanti saat sinyal stabil
+      throw err; 
     }
   }
 }
