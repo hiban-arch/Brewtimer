@@ -9,7 +9,7 @@ const ASSETS = [
 ];
 
 // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI SEBAGAI PUSAT UTAMA
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnCqpy9OWNId6UG4EI5P-m-EZH4rdg6zpxjPVutEJ3Gz5UREAhntT-h1vjmvLAr8xj/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXFkCWdBlzNovfQyBlPrXFkA4PTRUU5yezoMNsfDeRTc5iFwZUrIdGel7d6plf-r8E/exec';
 
 // Inisialisasi Database Lokal di Service Worker
 const dbPromise = idb.openDB('brew-offline-db', 1, {
