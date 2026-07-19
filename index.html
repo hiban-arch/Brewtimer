@@ -453,7 +453,7 @@
             </div>
             <p class="auth-links">
                 Belum punya akun? <a href="#" onclick="pindahForm('daftar')">Daftar</a><br>
-                <a href="https://wa.me/6285707434911?text=Halo%20Admin,%20saya%20lupa%20password%20akun%20BrewTools%20saya.%20Mohon%20bantuannya." target="_blank">Lupa password?</a>
+                <a href="https://wa.me/6285707444971?text=Halo%20Admin,%20saya%20lupa%20password%20akun%20BrewTools%20saya.%20Mohon%20bantuannya." target="_blank">Lupa password?</a>
             </p>
             <button id="btnAksiLogin" class="btn-auth" onclick="eksekusiLoginCloud()">MASUK</button>
         </div>
@@ -629,7 +629,7 @@
                         </tbody>
                     </table>
                     <strong>Pengaruh Terbesar Proses:</strong> Sweetness, Acidity, Body, Aroma Dasar, & Flavor Notes.
-                    <br><span style="color: #2a9d8f; font-weight: 600;">💡 Semakin baik proses pasca panen, semakin mudah menghasilkan seduhan yang enak.</span>
+                    <br><span style="color: #e63946; font-weight: 600;">💡 Semakin baik proses pasca panen, semakin mudah menghasilkan seduhan yang enak.</span>
                 </div>
             </div>
 
@@ -671,7 +671,7 @@
                             <strong>Rasa:</strong> Pahit, Sepat, Dry Aftertaste
                         </div>
                     </div>
-                    <p style="margin-top: 10px; font-style: italic; font-size: 13px;">
+                    <p style="margin-top: 10px; font-size: 13px;">
                         💡 <strong>Rekomendasi Pour Over:</strong> Umumnya digunakan <strong>medium hingga medium-coarse</strong>, kemudian disesuaikan kembali dengan karakter kopi dan target rasa Anda.
                     </p>
                 </div>
@@ -698,7 +698,7 @@
                             <strong>Dinamika Suhu Air:</strong>
                             <ul class="edu-sublist">
                                 <li><span style="color: #e63946;">Semakin tinggi suhu:</span> Ekstraksi semakin cepat, body & bitter meningkat</li>
-                                <li><span style="color: #2a9d8f;">Semakin rendah suhu:</span> Acidity lebih terasa (sweetness menurun bila terlalu rendah, risiko under extraction)</li>
+                                <li><span style="color: #e63946;">Semakin rendah suhu:</span> Acidity lebih terasa (sweetness menurun bila terlalu rendah, risiko under extraction)</li>
                             </ul>
                         </li>
                     </ul>
@@ -1084,6 +1084,7 @@
         if (indeksLangkahSekarang >= daftarLangkah.length) {
             clearInterval(timerInterval); isRunning = false;
             document.getElementById('statusDisplay').innerText = 'SELESAI';
+            document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: --'; // Reset keterangan saat selesai
             document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = 'var(--accent-green)';
             document.querySelectorAll('#menuTimerSection .water-input, #menuTimerSection .time-input').forEach(i=>i.disabled=false);
             setProgress(100); bunyikanBeep(880, 0.8); return;
@@ -1095,6 +1096,15 @@
         document.getElementById('statusDisplay').innerText = langkah.tipe;
         document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
         
+        // --- TAMBAHKAN LOGIKA INI UNTUK UPDATE POURING SELANJUTNYA DENGAN ANGKA ---
+        if (indeksLangkahSekarang + 1 < daftarLangkah.length) {
+            const langkahBerikutnya = daftarLangkah[indeksLangkahSekarang + 1];
+            document.getElementById('nextPourDisplay').innerText = `Pouring selanjutnya: ${langkahBerikutnya.tipe} (${langkahBerikutnya.targetAir}g)`;
+        } else {
+            document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: Tidak ada (Pour Terakhir)';
+        }
+        // -------------------------------------------------------------------------
+
         const sisa = langkah.durasi - detikDiLangkahSekarang;
         if (sisa > 0 && sisa <= 3) bunyikanBeep(440, 0.1);
         if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; if (indeksLangkahSekarang < daftarLangkah.length) bunyikanBeep(587.33, 0.4); }
