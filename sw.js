@@ -5,11 +5,11 @@ const CACHE_NAME = 'brewtimer-v3'; // Naikkan versi cache agar browser mendeteks
 const ASSETS = [
   'index.html',
   'manifest.json',
-  'icon1.png'
+  'icon12.png'
 ];
 
 // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI SEBAGAI PUSAT UTAMA
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXFkCWdBlzNovfQyBlPrXFkA4PTRUU5yezoMNsfDeRTc5iFwZUrIdGel7d6plf-r8E/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4fPHK5zDhOv1S0hNQbYdx49JudInDevYCem5f5vGL3sdYjNp6SGr1ABsfE9aFi7HO/exec';
 
 // Inisialisasi Database Lokal di Service Worker
 const dbPromise = idb.openDB('brew-offline-db', 1, {
@@ -54,16 +54,13 @@ self.addEventListener('sync', (e) => {
 async function kirimUtangDataKeSheets() {
   const db = await dbPromise;
   const semuaUtangData = await db.getAll('outbox');
-
   for (const data of semuaUtangData) {
     try {
-      // Menggunakan URL pusat yang sudah didefinisikan secara konsisten
-      // Dan mengirimkan langsung objek data seduhan yang tersimpan
+      // Mengirimkan langsung data payload yang berisi 12 variabel input (Timestamp otomatis di GAS)
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data) 
+        headers: { "Content-Type": "text/plain" }, // Menggunakan text/plain agar terhindar dari CORS
+        body: JSON.stringify(data.payload) 
       });
       
       // Jika sukses terkirim, hapus dari antrean lokal
