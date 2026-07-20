@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="BrewTimer">
-    <link rel="apple-touch-icon" href="icon1.png">
+    <link rel="apple-touch-icon" href="icon12.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
@@ -977,32 +977,62 @@
     }
 
     async function kirimDataKeSheets() {
-        const btn = document.getElementById('btnSubmit'); 
-        const msg = document.getElementById('statusMsg');
-        const payload = {
-            presetNama: document.getElementById('presetSelect').value || "Manual",
-            kopi: document.getElementById('kopi').value, ratio: document.getElementById('ratio').value,
-            totalAir: document.getElementById('totalAir').value, suhu: document.getElementById('suhu').value,
-            grindSize: document.getElementById('grindSize').value, roastBeans: document.getElementById('roastBeans').value,
-            flavor: document.getElementById('flavor').value, acidity: document.getElementById('acidity').value,
-            sweetness: document.getElementById('sweetness').value, body: document.getElementById('body').value,
-            aftertaste: document.getElementById('aftertaste').value, tasteSummary: document.getElementById('tasteSummary').value
-        };
-        if (!navigator.onLine) {
-            await simpanKeAntreanLokal(payload);
-            msg.style.color = "#f4a261"; msg.innerText = "⏳ Offline: Disimpan di HP.";
-            return;
-        }
-        btn.disabled = true; msg.innerText = "Mengirim ke Google Sheets...";
-        fetch(GOOGLE_SHEET_URL, { method: "POST", headers: { "Content-Type": "application/plain" }, body: JSON.stringify(payload) })
-        .then(res => res.json()).then(res => {
-            btn.disabled = false;
-            if (res.status === "success") msg.style.color = "#2a9d8f"; msg.innerText = "✓ Data tersimpan!";
-        }).catch(async () => {
-            await simpanKeAntreanLokal(payload);
-            btn.disabled = false; msg.style.color = "#f4a261"; msg.innerText = "⏳ Dialihkan ke antrean HP.";
-        });
+    const btn = document.getElementById('btnSubmit'); 
+    const msg = document.getElementById('statusMsg');
+
+    // Payload pas 13 kolom (Timestamp ditambahkan otomatis oleh Google Apps Script)
+    const payload = {
+        kopi: document.getElementById('kopi').value, 
+        ratio: document.getElementById('ratio').value,
+        totalAir: document.getElementById('totalAir').value, 
+        suhu: document.getElementById('suhu').value,
+        grindSize: document.getElementById('grindSize').value, 
+        roastBeans: document.getElementById('roastBeans').value,
+        flavor: document.getElementById('flavor').value, 
+        acidity: document.getElementById('acidity').value,
+        sweetness: document.getElementById('sweetness').value, 
+        body: document.getElementById('body').value,
+        aftertaste: document.getElementById('aftertaste').value, 
+        tasteSummary: document.getElementById('tasteSummary').value
+    };
+
+    // Mode Offline
+    if (!navigator.onLine) {
+        await simpanKeAntreanLokal(payload);
+        msg.style.color = "#f4a261"; 
+        msg.innerText = "⏳ Offline: Disimpan di HP.";
+        return;
     }
+
+    btn.disabled = true; 
+    msg.style.color = "var(--text-muted)";
+    msg.innerText = "Mengirim ke Google Sheets...";
+
+    // Gunakan text/plain untuk menghindari CORS Preflight (OPTIONS request)
+    fetch(GOOGLE_SHEET_URL, { 
+        method: "POST", 
+        headers: { "Content-Type": "text/plain" }, 
+        body: JSON.stringify(payload) 
+    })
+    .then(res => res.json())
+    .then(res => {
+        btn.disabled = false;
+        if (res.status === "success") {
+            msg.style.color = "#2a9d8f"; 
+            msg.innerText = "✓ Data tersimpan!";
+        } else {
+            msg.style.color = "#e63946";
+            msg.innerText = "❌ Gagal: " + res.message;
+        }
+    })
+    .catch(async (err) => {
+        console.error("Gagal mengirim data:", err);
+        await simpanKeAntreanLokal(payload);
+        btn.disabled = false; 
+        msg.style.color = "#f4a261"; 
+        msg.innerText = "⏳ Dialihkan ke antrean HP.";
+    });
+}
 
     function perbaruiRingkasanRasa() {
         const f = document.getElementById('flavor').value.trim();
