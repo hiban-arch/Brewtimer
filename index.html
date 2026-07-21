@@ -129,7 +129,6 @@
             color: #4a3728;
             border-color: #eaddca;
         }
-
         /* --- STYLING UTAMA KARTU PENGETAHUAN --- */
         .edu-card {
             background-color: var(--bg-input);
@@ -144,7 +143,6 @@
             color: var(--text-main);
             margin-bottom: 12px;
         }
-
         /* --- UNIFORM CORE TEXT STYLE UNTUK ISI PENGETAHUAN --- */
         .edu-content {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -190,7 +188,6 @@
             left: 0;
             color: var(--text-muted);
         }
-
         /* --- KOTAK LIVE PREDIKSI --- */
         .prediction-box {
             background-color: var(--bg-readonly);
@@ -213,7 +210,6 @@
             font-weight: normal;
             color: var(--text-main);
         }
-
         /* --- SWITCHER DARK MODE --- */
         .theme-switch-wrapper {
             position: relative;
@@ -358,7 +354,7 @@
         .btn-submit { width: 100%; background-color: #4a3728; color: white; padding: 14px; font-size: 15px; font-weight: bold; font-family: 'Montserrat', sans-serif; border: none; border-radius: 12px; cursor: pointer; }
         body.dark-mode .btn-submit { background-color: #eaddca; color: #4a3728; }
         .status-msg { margin-top: 8px; text-align: center; font-size: 13px; font-weight: 600; }
-
+        
         /* --- HALAMAN AUTH --- */
         .auth-box h2 {
             font-family: 'Montserrat', sans-serif;
@@ -389,17 +385,50 @@
             color: var(--text-main);
             outline: none;
         }
+        
+        /* Pembungkus Input Password */
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .password-wrapper input {
+            width: 100%;
+            padding-right: 42px;
+        }
+        .toggle-password-btn {
+            position: absolute;
+            right: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            opacity: 0.6;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-password-btn:hover {
+            opacity: 1;
+        }
+
         .auth-links {
-            font-size: 13px;
-            color: var(--text-muted);
+            margin-top: 16px;
             margin-bottom: 24px;
             text-align: center;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-muted);
         }
         .auth-links a {
             color: #d4a373;
             text-decoration: none;
-            font-weight: 700;
+            font-weight: 600;
+        }
+        .auth-links a:hover {
+            text-decoration: underline;
         }
         body.dark-mode .auth-links a {
             color: #588157;
@@ -425,57 +454,6 @@
             color: var(--text-muted);
             cursor: not-allowed;
         }
-
-        /* Pembungkus Input Password */
-.password-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.password-wrapper input {
-  width: 100%;
-  padding-right: 42px; /* Memberi ruang agar teks tidak tertutup ikon */
-}
-
-/* Tombol Ikon Mata */
-.toggle-password-btn {
-  position: absolute;
-  right: 12px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  opacity: 0.6;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggle-password-btn:hover {
-  opacity: 1;
-}
-
-/* Merapikan Jarak Antara Tautan dan Tombol Masuk */
-.auth-links {
-  margin-top: 16px;
-  margin-bottom: 24px; /* Memberi jarak vertikal sebelum tombol MASUK */
-  text-align: center;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-.auth-links a {
-  color: #c88a58;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.auth-links a:hover {
-  text-decoration: underline;
-}
-        
     </style>
 </head>
 <body>
@@ -488,45 +466,29 @@
             <div class="slider round"></div>
         </label>
     </div>
-
+    
     <!-- PANEL AUTHENTIKASI -->
     <div id="authContainer">
         <!-- FORM MASUK -->
-        <!-- Kartu Login -->
-<div class="login-card">
-  <div class="dark-mode-toggle">
-    <label>DARK MODE</label>
-    <input type="checkbox" id="darkModeBtn">
-  </div>
-
-  <h2>MASUK</h2>
-
-  <form id="loginForm">
-    <!-- Input Username -->
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Masukkan username" required>
-    </div>
-
-    <!-- Input Password dengan Wrapper & Ikon Mata -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" placeholder="Masukkan password" required>
-        <button type="button" id="togglePassword" class="toggle-password-btn" aria-label="Tampilkan password">👁️</button>
-      </div>
-    </div>
-
-    <!-- Tautan & Jarak Vertikal Baru -->
-    <div class="auth-links">
-      <p>Belum punya akun? <a href="#" id="linkDaftar">Daftar</a></p>
-      <a href="#" id="linkLupa">Lupa password?</a>
-    </div>
-
-    <!-- Tombol Masuk -->
-    <button type="submit" class="btn-submit">MASUK</button>
-  </form>
-</div>
+        <div id="boxLogin" class="auth-box">
+            <h2>MASUK</h2>
+            <div class="auth-group">
+                <label for="loginUser">Username</label>
+                <input type="text" id="loginUser" placeholder="Masukkan username">
+            </div>
+            <div class="auth-group">
+                <label for="loginPass">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="loginPass" placeholder="Masukkan password">
+                    <button type="button" id="togglePassword" class="toggle-password-btn" aria-label="Tampilkan password">👁️</button>
+                </div>
+            </div>
+            <div class="auth-links">
+                <p>Belum punya akun? <a href="#" onclick="pindahForm('daftar')">Daftar</a></p>
+                <a href="https://wa.me/6285707444971?text=Halo%20Admin,%20Saya%20lupa%20password%20akun%20BrewTools%20saya" target="_blank">Lupa password?</a>
+            </div>
+            <button id="btnAksiLogin" class="btn-auth" onclick="eksekusiLoginCloud()">MASUK</button>
+        </div>
 
         <!-- FORM DAFTAR -->
         <div id="boxDaftar" class="auth-box" style="display: none;">
@@ -543,9 +505,9 @@
                 <label>Konfirmasi Password</label>
                 <input type="password" id="regPassConfirm" placeholder="Ulangi password">
             </div>
-            <p class="auth-links">
-                Sudah memiliki akun? <a href="#" onclick="pindahForm('login')">Masuk</a>
-            </p>
+            <div class="auth-links">
+                <p>Sudah memiliki akun? <a href="#" onclick="pindahForm('login')">Masuk</a></p>
+            </div>
             <button id="btnAksiDaftar" class="btn-auth" onclick="eksekusiDaftarCloud()">DAFTAR AKUN</button>
         </div>
         <div id="authStatusMsg" class="status-msg"></div>
@@ -554,14 +516,12 @@
     <!-- PANEL UTAMA APLIKASI -->
     <div id="mainAppContainer" style="display: none;">
         <div class="app-title"><span>BREWING TOOLS</span></div>
-
         <!-- STRUKTUR MENU 3 TABS -->
         <div class="navigation-tabs">
             <button id="tabTimerBtn" class="tab-button active" onclick="gantiMenu('timer')">BREWING TIMER</button>
             <button id="tabSimBtn" class="tab-button" onclick="gantiMenu('sim')">GUIDELINE SEDUH</button>
             <button id="tabEduBtn" class="tab-button" onclick="gantiMenu('edu')">PENGETAHUAN</button>
         </div>
-
         <!-- ==================== MENU 1: BREWING TIMER ==================== -->
         <div id="menuTimerSection">
             <!-- Panel Preset Manager -->
@@ -623,7 +583,7 @@
                 <div class="status-msg" id="statusMsg"></div>
             </div>
         </div>
-
+        
         <!-- ==================== MENU 2: GUIDELINE SEDUH DINAMIS ==================== -->
         <div id="menuSimSection" style="display: none;">
             <div class="section-title-bold" style="margin-bottom: 16px;">Simulator & Panduan Seduh</div>
@@ -648,11 +608,10 @@
                         <option value="dark">Dark Roast</option>
                     </select>
                 </div>
-
                 <!-- Tampilan Output Kalkulasi Otomatis -->
                 <div class="prediction-box">
                     <div class="prediction-item">💡 Rekomendasi Suhu: <span class="prediction-value" id="predSuhu">90 - 94°C</span></div>
-                    <div class="prediction-item">👅 Karakter Rasa Utama: <span class="prediction-value" id="predRasa">Bersih, acidity tinggi, floral | Balance, Sweetness meningkat, Body lebih penuh</span></div>
+                    <div class="prediction-item">👅 Karakter Rasa Utama: <span class="prediction-value" id="predRasa">Clean, acidity tinggi, floral</span></div>
                 </div>
             </div>
             
@@ -663,7 +622,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- ==================== MENU 3: PENGETAHUAN (EDUKASI) ==================== -->
         <div id="menuEduSection" style="display: none;">
             <div class="section-title-bold" style="margin-bottom: 16px;">📚 Kamus Pengetahuan Kopi</div>
@@ -699,10 +658,9 @@
                         </tbody>
                     </table>
                     <strong>Pengaruh Terbesar Proses:</strong> Sweetness, Acidity, Body, Aroma Dasar, & Flavor Notes.
-                    <br><span style="color: #e63946; font-weight: 600;">💡 Semakin baik proses pasca panen, semakin mudah menghasilkan seduhan yang enak.</span>
+                    <br><span style="color: #00000; font-weight: 600;">💡 Setiap proses pasca panen memerlukan penyesuaian suhu dan grind size agar karakter unik biji kopi terekstraksi optimal.</span>
                 </div>
             </div>
-
             <!-- 2. ROAST PROFILE -->
             <div class="edu-card">
                 <h4>2. Profil Sangrai (Roast Profile)</h4>
@@ -724,7 +682,6 @@
                     </p>
                 </div>
             </div>
-
             <!-- 3. GRIND SIZE -->
             <div class="edu-card">
                 <h4>3. Ukuran Gilingan (Grind Size)</h4>
@@ -746,8 +703,7 @@
                     </p>
                 </div>
             </div>
-
-            <!-- 4. VARIABEL AIR & SUHU (SEKARANG DISINI & TERSTRUKTUR RAPI) -->
+            <!-- 4. VARIABEL AIR & SUHU -->
             <div class="edu-card">
                 <h4>4. Variabel Air & Suhu Ideal</h4>
                 <div class="edu-content">
@@ -776,27 +732,26 @@
             </div>
             
         </div>
-
     </div>
 </div>
 
 <script>
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw4fPHK5zDhOv1S0hNQbYdx49JudInDevYCem5f5vGL3sdYjNp6SGr1ABsfE9aFi7HO/exec";
     
-    // --- DICTIONARY UNTUK SIMULATOR PREDIKSI AUTOMATIS ---
+    // --- DATA SIMULATOR PREDIKSI AUTOMATIS (DIRAPIKAN DARI REDUNDANSI) ---
     const KONTEN_PROSES = {
-        washed: "Bersih, acidity tinggi, floral",
-        natural: "Sweetness tinggi, fruity, body tebal",
-        honey: "Manis, body sedang, acidity seimbang",
-        anaerobic: "Fermentatif, kompleks, winey"
+        washed: ["Clean Profile", "Floral", "Citrus Flavor"],
+        natural: ["Fruity", "High Sweetness", "Heavy Body"],
+        honey: ["Balanced Acidity", "Sweet Honey-like", "Medium Body"],
+        anaerobic: ["Complex Fermentative", "Winey", "Spiced Notes"]
     };
-
+    
     const KONTEN_ROAST = {
-        'light': { suhu: "94 - 96°C", notes: "Acidity tinggi, Floral, Fruity, Origin masih jelas" },
-        'light-medium': { suhu: "92 - 94°C", notes: "Sweetness mulai naik, acidity segar seimbang" },
-        'medium': { suhu: "90 - 94°C", notes: "Balance, Sweetness meningkat, Body lebih penuh" },
-        'medium-dark': { suhu: "88 - 90°C", notes: "Body tebal, kepahitan mulus halus" },
-        'dark': { suhu: "85 - 90°C", notes: "Bitter meningkat, Smoky, Origin mulai tertutup" }
+        'light': { suhu: "94 - 96°C", notes: ["High Acidity", "Bright Origin Character"] },
+        'light-medium': { suhu: "92 - 94°C", notes: ["Fresh Acidity", "Balanced Sweetness"] },
+        'medium': { suhu: "90 - 94°C", notes: ["Well Balanced", "Round Body"] },
+        'medium-dark': { suhu: "88 - 90°C", notes: ["Full Body", "Subtle Bitterness"] },
+        'dark': { suhu: "85 - 90°C", notes: ["Smoky Accent", "Low Acidity"] }
     };
 
     function hitungPrediksiSeduh() {
@@ -804,10 +759,13 @@
         const roast = document.getElementById('simRoast').value;
         
         const dataRoast = KONTEN_ROAST[roast];
-        const deskripsiProses = KONTEN_PROSES[proses];
+        const dataProses = KONTEN_PROSES[proses];
+
+        // Deduplikasi dan format keluaran agar lebih bersih dan rapi
+        const gabunganKarakter = [...new Set([...dataProses, ...dataRoast.notes])];
 
         document.getElementById('predSuhu').innerText = dataRoast.suhu;
-        document.getElementById('predRasa').innerText = `${deskripsiProses} | ${dataRoast.notes}`;
+        document.getElementById('predRasa').innerText = gabunganKarakter.join(' • ');
     }
 
     // --- FITUR GANTI MENU TABS ---
@@ -819,7 +777,7 @@
         const secTimer = document.getElementById('menuTimerSection');
         const secSim = document.getElementById('menuSimSection');
         const secEdu = document.getElementById('menuEduSection');
-
+        
         btnTimer.classList.remove('active');
         btnSim.classList.remove('active');
         btnEdu.classList.remove('active');
@@ -827,7 +785,7 @@
         secTimer.style.display = 'none';
         secSim.style.display = 'none';
         secEdu.style.display = 'none';
-
+        
         if (target === 'timer') {
             btnTimer.classList.add('active');
             secTimer.style.display = 'block';
@@ -862,7 +820,7 @@
         const passConfirm = document.getElementById('regPassConfirm').value;
         const statusMsg = document.getElementById('authStatusMsg');
         const btn = document.getElementById('btnAksiDaftar');
-
+        
         if (!user || !pass || !passConfirm) {
             statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Kolom tidak boleh ada yang kosong!"; return;
         }
@@ -872,10 +830,10 @@
         if (pass !== passConfirm) {
             statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Konfirmasi password tidak sesuai!"; return;
         }
-
+        
         btn.disabled = true; btn.innerText = "MEMPROSES...";
         statusMsg.style.color = "var(--text-muted)"; statusMsg.innerText = "Mendaftarkan akun ke cloud...";
-
+        
         fetch(GOOGLE_SHEET_URL, {
             method: "POST",
             body: JSON.stringify({ action: "register", username: user, password: pass })
@@ -909,14 +867,14 @@
         const pass = document.getElementById('loginPass').value;
         const statusMsg = document.getElementById('authStatusMsg');
         const btn = document.getElementById('btnAksiLogin');
-
+        
         if (!user || !pass) {
             statusMsg.style.color = "#e63946"; statusMsg.innerText = "❌ Isikan username & password!"; return;
         }
-
+        
         btn.disabled = true; btn.innerText = "VALIDASI...";
         statusMsg.style.color = "var(--text-muted)"; statusMsg.innerText = "Memverifikasi data kredensial...";
-
+        
         fetch(GOOGLE_SHEET_URL, {
             method: "POST",
             body: JSON.stringify({ action: "login", username: user, password: pass })
@@ -952,6 +910,7 @@
             request.onerror = (e) => reject(e.target.error);
         });
     }
+
     async function simpanKeAntreanLokal(payload) {
         const db = await bukaDB();
         return new Promise((resolve, reject) => {
@@ -1047,62 +1006,58 @@
     }
 
     async function kirimDataKeSheets() {
-    const btn = document.getElementById('btnSubmit'); 
-    const msg = document.getElementById('statusMsg');
+        const btn = document.getElementById('btnSubmit'); 
+        const msg = document.getElementById('statusMsg');
+        const payload = {
+            kopi: document.getElementById('kopi').value, 
+            ratio: document.getElementById('ratio').value,
+            totalAir: document.getElementById('totalAir').value, 
+            suhu: document.getElementById('suhu').value,
+            grindSize: document.getElementById('grindSize').value, 
+            roastBeans: document.getElementById('roastBeans').value,
+            flavor: document.getElementById('flavor').value, 
+            acidity: document.getElementById('acidity').value,
+            sweetness: document.getElementById('sweetness').value, 
+            body: document.getElementById('body').value,
+            aftertaste: document.getElementById('aftertaste').value, 
+            tasteSummary: document.getElementById('tasteSummary').value
+        };
 
-    // Payload pas 13 kolom (Timestamp ditambahkan otomatis oleh Google Apps Script)
-    const payload = {
-        kopi: document.getElementById('kopi').value, 
-        ratio: document.getElementById('ratio').value,
-        totalAir: document.getElementById('totalAir').value, 
-        suhu: document.getElementById('suhu').value,
-        grindSize: document.getElementById('grindSize').value, 
-        roastBeans: document.getElementById('roastBeans').value,
-        flavor: document.getElementById('flavor').value, 
-        acidity: document.getElementById('acidity').value,
-        sweetness: document.getElementById('sweetness').value, 
-        body: document.getElementById('body').value,
-        aftertaste: document.getElementById('aftertaste').value, 
-        tasteSummary: document.getElementById('tasteSummary').value
-    };
-
-    // Mode Offline
-    if (!navigator.onLine) {
-        await simpanKeAntreanLokal(payload);
-        msg.style.color = "#f4a261"; 
-        msg.innerText = "⏳ Offline: Disimpan di HP.";
-        return;
-    }
-
-    btn.disabled = true; 
-    msg.style.color = "var(--text-muted)";
-    msg.innerText = "Mengirim ke Google Sheets...";
-
-    // Gunakan text/plain untuk menghindari CORS Preflight (OPTIONS request)
-    fetch(GOOGLE_SHEET_URL, { 
-        method: "POST", 
-        headers: { "Content-Type": "text/plain" }, 
-        body: JSON.stringify(payload) 
-    })
-    .then(res => res.json())
-    .then(res => {
-        btn.disabled = false;
-        if (res.status === "success") {
-            msg.style.color = "#2a9d8f"; 
-            msg.innerText = "✓ Data tersimpan!";
-        } else {
-            msg.style.color = "#e63946";
-            msg.innerText = "❌ Gagal: " + res.message;
+        if (!navigator.onLine) {
+            await simpanKeAntreanLokal(payload);
+            msg.style.color = "#f4a261"; 
+            msg.innerText = "⏳ Offline: Disimpan di HP.";
+            return;
         }
-    })
-    .catch(async (err) => {
-        console.error("Gagal mengirim data:", err);
-        await simpanKeAntreanLokal(payload);
-        btn.disabled = false; 
-        msg.style.color = "#f4a261"; 
-        msg.innerText = "⏳ Dialihkan ke antrean HP.";
-    });
-}
+
+        btn.disabled = true; 
+        msg.style.color = "var(--text-muted)";
+        msg.innerText = "Mengirim ke Google Sheets...";
+
+        fetch(GOOGLE_SHEET_URL, { 
+            method: "POST", 
+            headers: { "Content-Type": "text/plain" }, 
+            body: JSON.stringify(payload) 
+        })
+        .then(res => res.json())
+        .then(res => {
+            btn.disabled = false;
+            if (res.status === "success") {
+                msg.style.color = "#2a9d8f"; 
+                msg.innerText = "✓ Data tersimpan!";
+            } else {
+                msg.style.color = "#e63946";
+                msg.innerText = "❌ Gagal: " + res.message;
+            }
+        })
+        .catch(async (err) => {
+            console.error("Gagal mengirim data:", err);
+            await simpanKeAntreanLokal(payload);
+            btn.disabled = false; 
+            msg.style.color = "#f4a261"; 
+            msg.innerText = "⏳ Dialihkan ke antrean HP.";
+        });
+    }
 
     function perbaruiRingkasanRasa() {
         const f = document.getElementById('flavor').value.trim();
@@ -1111,11 +1066,16 @@
         const b = document.getElementById('body').value.trim();
         const aft = document.getElementById('aftertaste').value.trim();
         let k = [];
-        if (f) k.push(`Flavor dominan ${f}`); if (s) k.push(`sweetness ${s}`); if (a) k.push(`acidity ${a}`); if (b) k.push(`body ${b}`); if (aft) k.push(`aftertaste ${aft}`);
+        if (f) k.push(`Flavor dominan ${f}`); 
+        if (s) k.push(`sweetness ${s}`); 
+        if (a) k.push(`acidity ${a}`); 
+        if (b) k.push(`body ${b}`); 
+        if (aft) k.push(`aftertaste ${aft}`);
         document.getElementById('tasteSummary').value = k.length > 0 ? k.join(', ') + '.' : '';
     }
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    
     function bunyikanBeep(frekuensi, durasi) {
         if (!audioCtx) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -1128,17 +1088,19 @@
 
     function toggleDarkMode() {
         const body = document.body;
-        if (document.getElementById('checkbox').checked) { body.classList.add('dark-mode'); localStorage.setItem('theme', 'dark'); } 
-        else { body.classList.remove('dark-mode'); localStorage.setItem('theme', 'light'); }
+        if (document.getElementById('checkbox').checked) { 
+            body.classList.add('dark-mode'); 
+            localStorage.setItem('theme', 'dark'); 
+        } else { 
+            body.classList.remove('dark-mode'); 
+            localStorage.setItem('theme', 'light'); 
+        }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('theme') === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('checkbox').checked = true; }
-        if (sessionStorage.getItem('sessionLoginActive') === 'true') { document.getElementById('authContainer').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'block'; }
-        renderDropdownPreset(); setProgress(0);
-    });
+    function hitungTotalAir() { 
+        document.getElementById('totalAir').value = (parseFloat(document.getElementById('kopi').value)||0)*(parseFloat(document.getElementById('ratio').value)||0); 
+    }
 
-    function hitungTotalAir() { document.getElementById('totalAir').value = (parseFloat(document.getElementById('kopi').value)||0)*(parseFloat(document.getElementById('ratio').value)||0); }
     function urutkanUlangMekanikBaris() {
         document.querySelectorAll('#menuTimerSection .pouring-row').forEach((row, idx) => {
             const badge = row.querySelector('.status-badge');
@@ -1146,6 +1108,7 @@
             badge.innerText = teks; badge.setAttribute('data-type', teks);
         });
     }
+
     function tambahBaris() {
         if (isRunning) return;
         const container = document.getElementById('pouringContainer');
@@ -1155,7 +1118,10 @@
         newRow.innerHTML = `<span class="status-badge" data-type="Pour">Pour</span><input type="number" class="water-input" value="50"><input type="number" class="time-input" value="30"><button class="btn-delete" onclick="hapusBaris(this)">✕</button>`;
         container.appendChild(newRow); urutkanUlangMekanikBaris();
     }
-    function hapusBaris(btn) { if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } }
+
+    function hapusBaris(btn) { 
+        if (!isRunning) { btn.parentElement.remove(); urutkanUlangMekanikBaris(); } 
+    }
     
     function susunRencanaSeduh() {
         daftarLangkah = []; airKumulatif = 0;
@@ -1184,7 +1150,7 @@
         if (indeksLangkahSekarang >= daftarLangkah.length) {
             clearInterval(timerInterval); isRunning = false;
             document.getElementById('statusDisplay').innerText = 'SELESAI';
-            document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: --'; // Reset keterangan saat selesai
+            document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: --';
             document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = 'var(--accent-green)';
             document.querySelectorAll('#menuTimerSection .water-input, #menuTimerSection .time-input').forEach(i=>i.disabled=false);
             setProgress(100); bunyikanBeep(880, 0.8); return;
@@ -1196,18 +1162,20 @@
         document.getElementById('statusDisplay').innerText = langkah.tipe;
         document.getElementById('targetDisplay').innerText = `Target Air: ${langkah.targetAir}g`;
         
-        // --- TAMBAHKAN LOGIKA INI UNTUK UPDATE POURING SELANJUTNYA DENGAN ANGKA ---
         if (indeksLangkahSekarang + 1 < daftarLangkah.length) {
             const langkahBerikutnya = daftarLangkah[indeksLangkahSekarang + 1];
             document.getElementById('nextPourDisplay').innerText = `Pouring selanjutnya: ${langkahBerikutnya.tipe} (${langkahBerikutnya.targetAir}g)`;
         } else {
             document.getElementById('nextPourDisplay').innerText = 'Pouring selanjutnya: Tidak ada (Pour Terakhir)';
         }
-        // -------------------------------------------------------------------------
-
+        
         const sisa = langkah.durasi - detikDiLangkahSekarang;
         if (sisa > 0 && sisa <= 3) bunyikanBeep(440, 0.1);
-        if (detikDiLangkahSekarang >= langkah.durasi) { indeksLangkahSekarang++; detikDiLangkahSekarang = 0; if (indeksLangkahSekarang < daftarLangkah.length) bunyikanBeep(587.33, 0.4); }
+        if (detikDiLangkahSekarang >= langkah.durasi) { 
+            indeksLangkahSekarang++; 
+            detikDiLangkahSekarang = 0; 
+            if (indeksLangkahSekarang < daftarLangkah.length) bunyikanBeep(587.33, 0.4); 
+        }
     }
 
     function resetTimer() {
@@ -1218,20 +1186,35 @@
         setProgress(0); 
     }
 
+    // Event Listener Inisialisasi Aplikasi
     document.addEventListener('DOMContentLoaded', () => {
-  const passwordInput = document.getElementById('password');
-  const toggleBtn = document.getElementById('togglePassword');
+        // Theme init
+        if (localStorage.getItem('theme') === 'dark') { 
+            document.body.classList.add('dark-mode'); 
+            document.getElementById('checkbox').checked = true; 
+        }
+        
+        // Session auth check
+        if (sessionStorage.getItem('sessionLoginActive') === 'true') { 
+            document.getElementById('authContainer').style.display = 'none'; 
+            document.getElementById('mainAppContainer').style.display = 'block'; 
+        }
+        
+        renderDropdownPreset(); 
+        setProgress(0);
 
-  toggleBtn.addEventListener('click', () => {
-    // Ubah tipe input antara 'password' dan 'text'
-    const isPassword = passwordInput.getAttribute('type') === 'password';
-    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-    
-    // Ubah simbol ikon mata (buka / tutup)
-    toggleBtn.textContent = isPassword ? '🙈' : '👁️';
-  });
-});
-    
+        // Password visibility toggle
+        const loginPassInput = document.getElementById('loginPass');
+        const toggleBtn = document.getElementById('togglePassword');
+        
+        if (toggleBtn && loginPassInput) {
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = loginPassInput.getAttribute('type') === 'password';
+                loginPassInput.setAttribute('type', isPassword ? 'text' : 'password');
+                toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+            });
+        }
+    });
 </script>
 </body>
 </html>
