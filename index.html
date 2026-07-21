@@ -425,6 +425,57 @@
             color: var(--text-muted);
             cursor: not-allowed;
         }
+
+        /* Pembungkus Input Password */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 42px; /* Memberi ruang agar teks tidak tertutup ikon */
+}
+
+/* Tombol Ikon Mata */
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  opacity: 0.6;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password-btn:hover {
+  opacity: 1;
+}
+
+/* Merapikan Jarak Antara Tautan dan Tombol Masuk */
+.auth-links {
+  margin-top: 16px;
+  margin-bottom: 24px; /* Memberi jarak vertikal sebelum tombol MASUK */
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.auth-links a {
+  color: #c88a58;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+        
     </style>
 </head>
 <body>
@@ -441,22 +492,41 @@
     <!-- PANEL AUTHENTIKASI -->
     <div id="authContainer">
         <!-- FORM MASUK -->
-        <div id="boxLogin" class="auth-box">
-            <h2>MASUK</h2>
-            <div class="auth-group">
-                <label>Username</label>
-                <input type="text" id="loginUser" placeholder="Masukkan username">
-            </div>
-            <div class="auth-group">
-                <label>Password</label>
-                <input type="password" id="loginPass" placeholder="Masukkan password">
-            </div>
-            <p class="auth-links">
-                Belum punya akun? <a href="#" onclick="pindahForm('daftar')">Daftar</a><br>
-                <a href="https://wa.me/6285707444971?text=Halo%20Admin,%20saya%20lupa%20password%20akun%20BrewTools%20saya.%20Mohon%20bantuannya." target="_blank">Lupa password?</a>
-            </p>
-            <button id="btnAksiLogin" class="btn-auth" onclick="eksekusiLoginCloud()">MASUK</button>
-        </div>
+        <!-- Kartu Login -->
+<div class="login-card">
+  <div class="dark-mode-toggle">
+    <label>DARK MODE</label>
+    <input type="checkbox" id="darkModeBtn">
+  </div>
+
+  <h2>MASUK</h2>
+
+  <form id="loginForm">
+    <!-- Input Username -->
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Masukkan username" required>
+    </div>
+
+    <!-- Input Password dengan Wrapper & Ikon Mata -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Masukkan password" required>
+        <button type="button" id="togglePassword" class="toggle-password-btn" aria-label="Tampilkan password">👁️</button>
+      </div>
+    </div>
+
+    <!-- Tautan & Jarak Vertikal Baru -->
+    <div class="auth-links">
+      <p>Belum punya akun? <a href="#" id="linkDaftar">Daftar</a></p>
+      <a href="#" id="linkLupa">Lupa password?</a>
+    </div>
+
+    <!-- Tombol Masuk -->
+    <button type="submit" class="btn-submit">MASUK</button>
+  </form>
+</div>
 
         <!-- FORM DAFTAR -->
         <div id="boxDaftar" class="auth-box" style="display: none;">
@@ -1147,6 +1217,21 @@
         document.getElementById('btnStart').innerText = 'START'; document.getElementById('btnStart').style.backgroundColor = 'var(--accent-green)';
         setProgress(0); 
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+  const passwordInput = document.getElementById('password');
+  const toggleBtn = document.getElementById('togglePassword');
+
+  toggleBtn.addEventListener('click', () => {
+    // Ubah tipe input antara 'password' dan 'text'
+    const isPassword = passwordInput.getAttribute('type') === 'password';
+    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    
+    // Ubah simbol ikon mata (buka / tutup)
+    toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+  });
+});
+    
 </script>
 </body>
 </html>
